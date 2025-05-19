@@ -12,7 +12,7 @@ export default function ProductsScreen() {
 
     useEffect(() => {
         setProducts(listProducts());
-    }, [])
+    }, [router])
 
     return (
         <View style={{ padding: 8, rowGap: 8 }}>

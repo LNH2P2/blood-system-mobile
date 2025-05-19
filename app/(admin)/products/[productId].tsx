@@ -11,7 +11,7 @@ export default function ProductDetailScreen() {
 
     useEffect(() => {
         setProduct(getProduct(Number(productId)))
-    }, [])
+    }, [productId])
 
     return (
         <ProductForm
