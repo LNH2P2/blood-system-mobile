@@ -1,17 +1,27 @@
 import { listProducts } from "@/lib/api/products";
 import MockProduct from "@/lib/components/MockProduct";
-import { ProductType } from "@/lib/types";
 import { Button } from "@react-navigation/elements";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigation, useRouter } from "expo-router";
+import { useEffect } from "react";
 import { View } from "react-native";
 
 export default function ProductsScreen() {
     const router = useRouter();
-    const [products, setProducts] = useState<ProductType[]>([]);
+    const navigation = useNavigation();
+
+    const listProductsQuery = useQuery({
+        queryKey: ["listProducts"],
+        queryFn: listProducts,
+        initialData: []
+    })
+    const products = listProductsQuery.data;
+    console.log(products);
 
     useEffect(() => {
-        setProducts(listProducts());
+        navigation.addListener("focus", () => {
+            listProductsQuery.refetch();
+        })
     }, [router])
 
     return (

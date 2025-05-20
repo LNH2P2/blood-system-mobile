@@ -1,18 +1,18 @@
 import { deleteProduct, getProduct, updateProduct } from "@/lib/api/products";
 import ProductForm from "@/lib/components/ProductForm";
-import { ProductType } from "@/lib/types";
+import { useQuery } from "@tanstack/react-query";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
 
 export default function ProductDetailScreen() {
     const { productId } = useLocalSearchParams<{ productId: string }>();
-    const [product, setProduct] = useState<ProductType>();
     const router = useRouter();
 
-    useEffect(() => {
-        setProduct(getProduct(Number(productId)))
-    }, [productId])
-
+    const getProductQuery = useQuery({
+        queryKey: ["getProduct", productId],
+        queryFn: () => getProduct(+productId),
+    })
+    const product = getProductQuery.data;
+    
     return (
         <ProductForm
             product={product}

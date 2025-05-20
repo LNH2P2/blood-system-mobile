@@ -9,7 +9,6 @@ export default function CreateProductScreen() {
         <ProductForm
             onCancel={() => router.back()}
             onSubmit={(product) => {
-                console.log("Product created", product);
                 createProduct(product);
                 router.back();
             }}

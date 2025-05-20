@@ -57,7 +57,7 @@ export default function ProductForm(props: ProductFormProps) {
             <View style={{ flexDirection: "row", columnGap: 8 }}>
                 <Button onPressIn={() => props.onSubmit && props.onSubmit(product)}>Save</Button>
                 <RedButton onPressIn={props.onCancel}>Cancel</RedButton>
-                {props.product?.id && <Button onPressIn={props.onDelete}>Delete</Button>}
+                {props.product?.id ? <Button onPressIn={props.onDelete}>Delete</Button> : <></>}
             </View>
         </View>
     );
