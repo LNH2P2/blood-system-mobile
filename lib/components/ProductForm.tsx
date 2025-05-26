@@ -1,8 +1,6 @@
-import { Button, Text } from "@react-navigation/elements";
 import { useEffect, useState } from "react";
-import { TextInput, View } from "react-native";
+import { Button, Text, TextInput, View } from "react-native";
 import { ProductType } from "../types";
-import RedButton from "./RedButton";
 
 export interface ProductFormProps {
     product?: ProductType;
@@ -55,9 +53,9 @@ export default function ProductForm(props: ProductFormProps) {
                 />
             </View>
             <View style={{ flexDirection: "row", columnGap: 8 }}>
-                <Button onPressIn={() => props.onSubmit && props.onSubmit(product)}>Save</Button>
-                <RedButton onPressIn={props.onCancel}>Cancel</RedButton>
-                {props.product?.id ? <Button onPressIn={props.onDelete}>Delete</Button> : <></>}
+                <Button title="Save" onPress={() => props.onSubmit && props.onSubmit(product)} />
+                <Button title="Cancel" onPress={props.onCancel} />
+                {props.product?.id ? <Button title="Delete" onPress={props.onDelete} /> : <></>}
             </View>
         </View>
     );

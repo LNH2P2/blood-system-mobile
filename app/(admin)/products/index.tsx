@@ -1,10 +1,9 @@
 import { listProducts } from "@/lib/api/products";
 import MockProduct from "@/lib/components/MockProduct";
-import { Button } from "@react-navigation/elements";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigation, useRouter } from "expo-router";
 import { useEffect } from "react";
-import { View } from "react-native";
+import { Button, View } from "react-native";
 
 export default function ProductsScreen() {
     const router = useRouter();
@@ -27,7 +26,7 @@ export default function ProductsScreen() {
     return (
         <View style={{ padding: 8, rowGap: 8 }}>
             <View style={{ flexDirection: "row" }}>
-                <Button onPressIn={() => router.navigate("/products/create")}>Add Product</Button>
+                <Button title="Add Product" onPress={() => router.navigate("/products/create")} />
             </View>
             <View style={{ rowGap: 4 }}>
                 {products.map((item, index) => (

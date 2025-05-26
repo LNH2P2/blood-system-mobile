@@ -1,7 +1,5 @@
-import RedButton from "@/lib/components/RedButton";
-import { Button } from "@react-navigation/elements";
 import { useRouter } from "expo-router";
-import { View } from "react-native";
+import { Button, View } from "react-native";
 
 export default function Index() {
   const router = useRouter();
@@ -14,12 +12,8 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Button onPressIn={() => router.navigate("/(member)/profile")}>
-        Member
-      </Button>
-      <RedButton onPressIn={() => router.navigate("/(admin)")}>
-        Admin
-      </RedButton>
+      <Button title="Member" onPress={() => router.navigate("/(member)/profile")} />
+      <Button title="Admin" onPress={() => router.navigate("/(admin)")} />
     </View>
   );
 }
