@@ -1,3 +1,4 @@
+import { theme } from '@/lib/theme'
 import { Ionicons } from '@expo/vector-icons'
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
@@ -11,7 +12,7 @@ const Header = () => (
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: '#dc2626',
+    backgroundColor: theme.color.primary,
     paddingVertical: 16,
     paddingHorizontal: 20,
     flexDirection: 'row',

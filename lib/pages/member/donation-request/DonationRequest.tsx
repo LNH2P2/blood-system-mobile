@@ -19,6 +19,7 @@ import {
   FormErrors,
   initialFormData
 } from '@/lib/pages/member/donation-request/types'
+import { theme } from '@/lib/theme'
 import { SafeAreaView } from 'react-native-safe-area-context'
 export default function DonationRequestForm() {
   const [formData, setFormData] = useState<FormData>(initialFormData)
@@ -189,7 +190,7 @@ const styles = StyleSheet.create({
     padding: 20
   },
   submitButton: {
-    backgroundColor: '#dc2626',
+    backgroundColor: theme.color.primary,
     borderRadius: 8,
     paddingVertical: 16,
     alignItems: 'center',

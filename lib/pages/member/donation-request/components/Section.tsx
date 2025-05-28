@@ -1,3 +1,4 @@
+import { theme } from '@/lib/theme'
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 
@@ -30,7 +31,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#dc2626',
+    color: theme.color.primary,
     marginBottom: 16
   }
 })
