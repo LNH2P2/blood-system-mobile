@@ -7,11 +7,14 @@ export interface FormData {
   email: string
   address: string
   bloodType: string
-  weight: string
   hasDonatedBefore: string
   lastDonationDate: Date | null
   medicalConditions: string
   medications: string
+  readyToDonateDate: Date | null
+  receiveReminders: boolean
+  donationStatus: string
+  donationHistory: string
   consent: boolean
 }
 
@@ -28,11 +31,14 @@ export const initialFormData: FormData = {
   email: '',
   address: '',
   bloodType: '',
-  weight: '',
   hasDonatedBefore: '',
   lastDonationDate: null,
   medicalConditions: '',
   medications: '',
+  readyToDonateDate: null,
+  receiveReminders: false,
+  donationStatus: '',
+  donationHistory: '',
   consent: false
 }
 

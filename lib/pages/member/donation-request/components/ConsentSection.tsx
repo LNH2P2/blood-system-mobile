@@ -2,6 +2,7 @@ import CheckBox from 'expo-checkbox'
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 
+import { theme } from '@/lib/theme'
 import Section from './Section'
 
 interface ConsentSectionProps {
@@ -18,7 +19,7 @@ const ConsentSection = ({ consent, error, onChange }: ConsentSectionProps) => {
           value={consent}
           onValueChange={onChange}
           style={styles.checkbox}
-          color={consent ? '#dc2626' : undefined}
+          color={consent ? theme.color.primary : undefined}
         />
         <View style={styles.checkboxTextContainer}>
           <Text style={styles.checkboxText}>

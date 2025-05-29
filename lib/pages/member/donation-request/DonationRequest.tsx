@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import {
   ActivityIndicator,
-  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,6 +9,7 @@ import {
 } from 'react-native'
 
 // Types
+import { useAlert } from '@/lib/hooks/useAlert'
 import ConsentSection from '@/lib/pages/member/donation-request/components/ConsentSection'
 import Header from '@/lib/pages/member/donation-request/components/Header'
 import MedicalInfoSection from '@/lib/pages/member/donation-request/components/MedicalInfoSection'
@@ -21,10 +21,12 @@ import {
 } from '@/lib/pages/member/donation-request/types'
 import { theme } from '@/lib/theme'
 import { SafeAreaView } from 'react-native-safe-area-context'
+
 export default function DonationRequestForm() {
   const [formData, setFormData] = useState<FormData>(initialFormData)
   const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const alert = useAlert()
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
@@ -67,12 +69,6 @@ export default function DonationRequestForm() {
       newErrors.address = 'Địa chỉ phải có ít nhất 5 ký tự'
     }
 
-    if (!formData.weight.trim()) {
-      newErrors.weight = 'Cân nặng là bắt buộc'
-    } else if (isNaN(Number(formData.weight)) || Number(formData.weight) <= 0) {
-      newErrors.weight = 'Cân nặng phải là số dương'
-    }
-
     if (!formData.hasDonatedBefore) {
       newErrors.hasDonatedBefore = 'Vui lòng chọn'
     }
@@ -87,7 +83,7 @@ export default function DonationRequestForm() {
 
   const handleSubmit = async () => {
     if (!validateForm()) {
-      Alert.alert('Lỗi', 'Vui lòng kiểm tra lại thông tin')
+      alert.showError('Vui lòng kiểm tra lại thông tin')
       return
     }
 
@@ -97,21 +93,15 @@ export default function DonationRequestForm() {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 2000))
 
-      Alert.alert(
-        'Thành công!',
+      alert.showSuccess(
         'Đăng ký hiến máu thành công. Chúng tôi sẽ liên hệ với bạn sớm.',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              setFormData(initialFormData)
-              setErrors({})
-            }
-          }
-        ]
+        () => {
+          setFormData(initialFormData)
+          setErrors({})
+        }
       )
     } catch (error) {
-      Alert.alert('Lỗi', 'Có lỗi xảy ra. Vui lòng thử lại.')
+      alert.showError('Có lỗi xảy ra. Vui lòng thử lại.')
     } finally {
       setIsSubmitting(false)
     }
@@ -128,7 +118,7 @@ export default function DonationRequestForm() {
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.form}>
+        <View>
           <PersonalInfoSection
             formData={formData}
             errors={errors}
@@ -147,7 +137,9 @@ export default function DonationRequestForm() {
             onChange={(value) => handleChange('consent', value)}
           />
 
-          <SubmitButton onPress={handleSubmit} isSubmitting={isSubmitting} />
+          <View style={styles.buttonContainer}>
+            <SubmitButton onPress={handleSubmit} isSubmitting={isSubmitting} />
+          </View>
 
           <View style={styles.bottomSpacing} />
         </View>
@@ -212,6 +204,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginLeft: 8
+  },
+  buttonContainer: {
+    marginTop: 20,
+    paddingHorizontal: 20
   },
   bottomSpacing: {
     height: 20

@@ -52,16 +52,6 @@ const MedicalInfoSection = ({
         </View>
       </View>
 
-      <FormInput
-        label='Cân nặng (kg)'
-        placeholder='60'
-        value={formData.weight}
-        onChangeText={(text) => onChange('weight', text)}
-        error={errors.weight}
-        isRequired
-        keyboardType='numeric'
-      />
-
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Bạn đã từng hiến máu trước đây chưa? *</Text>
         <View
