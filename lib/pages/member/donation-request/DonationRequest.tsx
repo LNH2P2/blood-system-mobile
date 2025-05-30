@@ -111,6 +111,11 @@ export default function DonationRequestForm() {
     setFormData({ ...formData, [field]: value })
   }
 
+  // Hàm mới để cập nhật nhiều field cùng lúc
+  const handleBulkChange = (updates: Partial<FormData>): void => {
+    setFormData((prevData) => ({ ...prevData, ...updates }))
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <Header />
@@ -123,6 +128,7 @@ export default function DonationRequestForm() {
             formData={formData}
             errors={errors}
             onChange={handleChange}
+            onBulkChange={handleBulkChange}
           />
 
           <MedicalInfoSection

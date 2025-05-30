@@ -22,12 +22,14 @@ interface PersonalInfoSectionProps {
   formData: FormData
   errors: FormErrors
   onChange: (field: keyof FormData, value: any) => void
+  onBulkChange?: (updates: Partial<FormData>) => void
 }
 
 const PersonalInfoSection = ({
   formData,
   errors,
-  onChange
+  onChange,
+  onBulkChange
 }: PersonalInfoSectionProps) => {
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [qrModalVisible, setQrModalVisible] = useState(false)
@@ -121,6 +123,13 @@ const PersonalInfoSection = ({
       // Kiểm tra nếu dữ liệu chứa dấu |, xử lý theo định dạng CCCD
       if (data.includes('|')) {
         const parts = data.split('|')
+        console.log('QR parts length:', parts.length)
+        parts.forEach((part, index) => {
+          console.log(`Part ${index}:`, part)
+        })
+
+        // Tạo object để lưu trữ dữ liệu từ QR code
+        const qrData: Partial<FormData> = {}
 
         // Format: CCCD||Họ tên|Ngày sinh|Giới tính|Địa chỉ|Ngày cấp
         // Ví dụ: 056204000613||Huỳnh Chí M Phương Nguyễn|27072004|Nam|Thôn Phước Lý, Ninh Bình, Ninh Hòa, Khánh Hòa|08042021
@@ -128,15 +137,24 @@ const PersonalInfoSection = ({
         // CCCD - lấy phần đầu tiên và loại bỏ dấu | thừa
         let idNumber = parts[0].replace(/\|/g, '').trim()
         if (idNumber) {
-          onChange('idNumber', idNumber)
+          qrData.idNumber = idNumber
           console.log('Đã điền CCCD:', idNumber)
         }
 
         // Họ tên - thường ở phần thứ 2 hoặc 3 tùy định dạng
-        let fullName = ''
+        let fullNameIndex = -1
+        // Thử phần thứ 3 (index 2)
         if (parts.length > 2 && parts[2].trim()) {
-          fullName = parts[2].trim()
-          onChange('fullName', fullName)
+          fullNameIndex = 2
+        }
+        // Thử phần thứ 2 (index 1) nếu phần 3 trống
+        else if (parts.length > 1 && parts[1].trim()) {
+          fullNameIndex = 1
+        }
+
+        if (fullNameIndex >= 0) {
+          const fullName = parts[fullNameIndex].trim()
+          qrData.fullName = fullName
           console.log('Đã điền Họ tên:', fullName)
         }
 
@@ -153,7 +171,7 @@ const PersonalInfoSection = ({
 
               // Kiểm tra xem ngày có hợp lệ không
               if (!isNaN(dateOfBirth.getTime())) {
-                onChange('dateOfBirth', dateOfBirth.toDateString())
+                qrData.dateOfBirth = dateOfBirth
                 console.log('Đã điền Ngày sinh:', formatDate(dateOfBirth))
               }
             } catch (e) {
@@ -166,10 +184,10 @@ const PersonalInfoSection = ({
         if (parts.length > 4 && parts[4].trim()) {
           const genderText = parts[4].trim().toLowerCase()
           if (genderText === 'nam') {
-            onChange('gender', 'male')
+            qrData.gender = 'male'
             console.log('Đã điền Giới tính: Nam')
           } else if (genderText === 'nữ' || genderText === 'nu') {
-            onChange('gender', 'female')
+            qrData.gender = 'female'
             console.log('Đã điền Giới tính: Nữ')
           }
         }
@@ -177,16 +195,49 @@ const PersonalInfoSection = ({
         // Địa chỉ
         if (parts.length > 5 && parts[5].trim()) {
           const address = parts[5].trim()
-          onChange('address', address)
+          qrData.address = address
           console.log('Đã điền Địa chỉ:', address)
+        }
+
+        console.log('Tất cả thông tin đã điền từ QR:', qrData)
+
+        // Cập nhật tất cả các trường cùng một lúc
+        if (onBulkChange) {
+          onBulkChange(qrData)
+          console.log('Đã cập nhật tất cả thông tin sử dụng onBulkChange')
+        } else {
+          // Fallback nếu onBulkChange không được cung cấp
+          Object.entries(qrData).forEach(([key, value]) => {
+            onChange(key as keyof FormData, value)
+            console.log(`Đã cập nhật ${key} = ${value} sử dụng onChange`)
+          })
         }
 
         // Đóng modal sau khi điền thông tin
         setTimeout(() => {
           setQrModalVisible(false)
           setScanned(false)
-          Alert.alert('Thành công', 'Đã nhập thông tin từ mã QR')
+
+          // Hiển thị thông báo với thông tin đã điền
+          let messageDetails = ''
+          if (qrData.fullName) messageDetails += `Họ tên: ${qrData.fullName}\n`
+          if (qrData.idNumber)
+            messageDetails += `CCCD/CMND: ${qrData.idNumber}\n`
+          if (qrData.gender)
+            messageDetails += `Giới tính: ${
+              qrData.gender === 'male' ? 'Nam' : 'Nữ'
+            }\n`
+          if (qrData.dateOfBirth)
+            messageDetails += `Ngày sinh: ${formatDate(qrData.dateOfBirth)}\n`
+          if (qrData.address) messageDetails += `Địa chỉ: ${qrData.address}`
+
+          Alert.alert(
+            'Đã quét thành công',
+            `Thông tin đã được điền tự động:\n\n${messageDetails}`,
+            [{ text: 'OK' }]
+          )
         }, 500)
+
         return
       }
 
@@ -194,38 +245,76 @@ const PersonalInfoSection = ({
       const parsedData = JSON.parse(data)
       console.log('Parsed JSON data:', parsedData)
 
+      const qrData: Partial<FormData> = {}
+
       // Điền các trường dữ liệu nếu có
-      if (parsedData.fullName) onChange('fullName', parsedData.fullName)
-      if (parsedData.idNumber) onChange('idNumber', parsedData.idNumber)
-      if (parsedData.phoneNumber)
-        onChange('phoneNumber', parsedData.phoneNumber)
-      if (parsedData.email) onChange('email', parsedData.email)
-      if (parsedData.address) onChange('address', parsedData.address)
+      if (parsedData.fullName) qrData.fullName = parsedData.fullName
+      if (parsedData.idNumber) qrData.idNumber = parsedData.idNumber
+      if (parsedData.phoneNumber) qrData.phoneNumber = parsedData.phoneNumber
+      if (parsedData.email) qrData.email = parsedData.email
+      if (parsedData.address) qrData.address = parsedData.address
 
       if (parsedData.gender) {
-        onChange('gender', parsedData.gender)
+        qrData.gender = parsedData.gender
       }
 
       if (parsedData.dateOfBirth) {
         try {
           const dateOfBirth = new Date(parsedData.dateOfBirth)
           if (!isNaN(dateOfBirth.getTime())) {
-            onChange('dateOfBirth', dateOfBirth)
+            qrData.dateOfBirth = dateOfBirth
           }
         } catch (e) {
           console.log('Invalid date format:', parsedData.dateOfBirth)
         }
       }
 
-      console.log('Đã điền thông tin từ JSON:', formData)
+      console.log('Tất cả thông tin đã điền từ JSON:', qrData)
+
+      // Cập nhật tất cả các trường cùng một lúc
+      if (onBulkChange) {
+        onBulkChange(qrData)
+        console.log('Đã cập nhật tất cả thông tin sử dụng onBulkChange')
+      } else {
+        // Fallback nếu onBulkChange không được cung cấp
+        Object.entries(qrData).forEach(([key, value]) => {
+          onChange(key as keyof FormData, value)
+          console.log(`Đã cập nhật ${key} = ${value} sử dụng onChange`)
+        })
+      }
 
       // Đóng modal quét QR và hiển thị thông báo thành công
       setTimeout(() => {
         setQrModalVisible(false)
         setScanned(false)
-        Alert.alert('Thành công', 'Đã nhập thông tin từ mã QR')
+
+        // Hiển thị thông báo với thông tin đã điền
+        let messageDetails = ''
+        if (qrData.fullName) messageDetails += `Họ tên: ${qrData.fullName}\n`
+        if (qrData.idNumber) messageDetails += `CCCD/CMND: ${qrData.idNumber}\n`
+        if (qrData.gender)
+          messageDetails += `Giới tính: ${
+            qrData.gender === 'male'
+              ? 'Nam'
+              : qrData.gender === 'female'
+              ? 'Nữ'
+              : qrData.gender
+          }\n`
+        if (qrData.dateOfBirth)
+          messageDetails += `Ngày sinh: ${formatDate(qrData.dateOfBirth)}\n`
+        if (qrData.address) messageDetails += `Địa chỉ: ${qrData.address}\n`
+        if (qrData.phoneNumber)
+          messageDetails += `Số điện thoại: ${qrData.phoneNumber}\n`
+        if (qrData.email) messageDetails += `Email: ${qrData.email}`
+
+        Alert.alert(
+          'Đã quét thành công',
+          `Thông tin đã được điền tự động:\n\n${messageDetails}`,
+          [{ text: 'OK' }]
+        )
       }, 500)
     } catch (e) {
+      // Nếu không phải JSON hoặc định dạng CCCD, hiển thị thông báo lỗi
       console.log('Không thể xử lý dữ liệu QR:', e)
       setTimeout(() => {
         setQrModalVisible(false)
