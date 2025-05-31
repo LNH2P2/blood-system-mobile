@@ -13,7 +13,7 @@ import { useAlert } from '@/lib/hooks/useAlert'
 import ConsentSection from '@/lib/pages/member/donation-request/components/ConsentSection'
 import Header from '@/lib/pages/member/donation-request/components/Header'
 import MedicalInfoSection from '@/lib/pages/member/donation-request/components/MedicalInfoSection'
-import PersonalInfoSection from '@/lib/pages/member/donation-request/components/PersonalInfoSection'
+import PersonalInfoSection from '@/lib/pages/member/donation-request/components/PersonalInfo/PersonalInfoSection'
 import {
   FormData,
   FormErrors,
