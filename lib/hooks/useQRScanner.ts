@@ -1,7 +1,7 @@
 import { Camera } from 'expo-camera'
 import { useState } from 'react'
 import { Alert, Linking, Platform } from 'react-native'
-import { FormData } from '../../types'
+import { FormData } from '../pages/member/donation-request/types'
 
 export const useQRScanner = (
   onChange: (field: keyof FormData, value: any) => void,
