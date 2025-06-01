@@ -1,34 +1,36 @@
 import { theme } from '@/lib/theme'
-import { Ionicons } from '@expo/vector-icons'
-import { Tabs } from 'expo-router'
+import { Stack } from 'expo-router'
 
 export default function MemberLayout() {
   return (
-    <Tabs
+    <Stack
       screenOptions={{
-        tabBarActiveTintColor: theme.color.primary,
         headerShown: false
       }}
     >
-      <Tabs.Screen
+      <Stack.Screen
         name='profile/index'
         options={{
-          title: 'Hồ sơ',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name='person' size={size} color={color} />
-          )
+          title: 'Hồ sơ'
         }}
       />
-      <Tabs.Screen
+      <Stack.Screen
         name='donation-request/index'
         options={{
-          title: 'Hiến máu',
-          headerShown: false, // Ẩn header mặc định cho tab Hiến máu
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name='heart' size={size} color={color} />
-          )
+          title: 'Đặt lịch hiến máu',
+          headerShown: true,
+          headerTitleAlign: 'center',
+          headerStyle: {
+            backgroundColor: theme.color.primary
+          },
+          headerTitleStyle: {
+            color: 'white',
+            fontWeight: 'bold',
+            fontSize: 18
+          },
+          headerTintColor: 'white'
         }}
       />
-    </Tabs>
+    </Stack>
   )
 }
