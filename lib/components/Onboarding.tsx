@@ -1,15 +1,15 @@
-import React, { useState, useRef } from 'react'
+import { theme } from '@/lib/theme';
+import { Ionicons } from '@expo/vector-icons';
+import React, { useRef, useState } from 'react';
 import {
-  StyleSheet,
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
   Dimensions,
-  FlatList
-} from 'react-native'
-import { theme } from '@/lib/theme'
-import { Ionicons } from '@expo/vector-icons'
+  FlatList,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 
 interface OnboardingProps {
   onFinish: () => void
@@ -38,6 +38,7 @@ const onboardingData = [
     title: 'Let\'s get started!',
     description: 'Login to enjoy the features we\'ve provided, and stay healthy!',
     showButtons: true,
+    image: require('@/assets/images/logo-text-primary.svg'),
   },
 ]
 
