@@ -1,13 +1,12 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import React from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import BlogList from "./components/BlogList";
+import BlogList from "../blog/components/BlogList";
 import { blogs } from "./mock";
-import { RootStackParamList } from "./type";
 
 export default function HomePage() {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const router = useRouter();
 
   return (
     <SafeAreaView style={{ flex: 1, padding: 16 }}>
@@ -20,7 +19,7 @@ export default function HomePage() {
         }}
       >
         <Text style={{ fontSize: 20, fontWeight: "bold" }}>Latest Blogs</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("BlogPage")}>
+        <TouchableOpacity onPress={() => router.navigate("/(member)/blog")}>
           <Text style={{ color: "#007bff" }}>See all</Text>
         </TouchableOpacity>
       </View>
