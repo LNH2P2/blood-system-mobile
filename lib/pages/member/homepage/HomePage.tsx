@@ -8,6 +8,9 @@ import { blogs } from "./mock";
 export default function HomePage() {
   const router = useRouter();
 
+  // Only get the first 3 blogs
+  const latestBlogs = blogs.slice(0, 3);
+
   return (
     <SafeAreaView style={{ flex: 1, padding: 16 }}>
       <View
@@ -24,7 +27,7 @@ export default function HomePage() {
         </TouchableOpacity>
       </View>
       <FlatList
-        data={blogs}
+        data={latestBlogs}
         renderItem={({ item }) => <BlogList item={item} />}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
