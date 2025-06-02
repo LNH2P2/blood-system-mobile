@@ -9,7 +9,6 @@ interface SplashScreenProps {
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
   React.useEffect(() => {
-    // Auto-hide the splash screen after 2 seconds
     const timer = setTimeout(() => {
       if (onFinish) onFinish()
     }, 2000)
@@ -20,7 +19,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-        <Image source={require("@/assets/images/icon.svg")} resizeMode="contain" />
+        <Image source={require("@/assets/images/icon.png")} resizeMode="contain" />
         <Text style={styles.logoText}>Medics</Text>
       </View>
     </View>

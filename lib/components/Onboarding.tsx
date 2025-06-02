@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import LoginScreen from './LoginScreen';
 
 interface OnboardingProps {
   onFinish: () => void
@@ -35,10 +36,7 @@ const onboardingData = [
   },
   {
     id: '4',
-    title: 'Let\'s get started!',
-    description: 'Login to enjoy the features we\'ve provided, and stay healthy!',
-    showButtons: true,
-    image: require('@/assets/images/logo-text-primary.svg'),
+    isLoginScreen: true,
   },
 ]
 
@@ -58,44 +56,23 @@ const Onboarding: React.FC<OnboardingProps> = ({ onFinish }) => {
   }
 
   const renderItem = ({ item, index }: { item: any; index: number }) => {
+    if (item.isLoginScreen) {
+      return <LoginScreen onLogin={onFinish} onSignUp={onFinish} />
+    }
+
     return (
       <View style={[styles.slide, { width }]}>
-        {item.image ? (
+        {item.image && (
           <Image source={item.image} style={styles.image} resizeMode="contain" />
-        ) : (
-          <View style={styles.logoContainer}>
-            <Image 
-              source={require('@/assets/images/icon.svg')} 
-              style={styles.logo} 
-              resizeMode="contain" 
-            />
-            <Text style={styles.logoText}>Medics</Text>
-          </View>
-        )}
-        
-        <Text style={styles.title}>{item.title}</Text>
-        
-        {item.description && (
-          <Text style={styles.description}>{item.description}</Text>
         )}
 
-        {item.showButtons ? (
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity 
-              style={styles.loginButton} 
-              onPress={onFinish}
-            >
-              <Text style={styles.loginButtonText}>Login</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={styles.signUpButton} 
-              onPress={onFinish}
-            >
-              <Text style={styles.signUpButtonText}>Sign Up</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
+        <View style={styles.card}>
+          <Text style={styles.title}>{item.title}</Text>
+
+          {item.description && (
+            <Text style={styles.description}>{item.description}</Text>
+          )}
+
           <View style={styles.paginationContainer}>
             <View style={styles.pagination}>
               {onboardingData.slice(0, 3).map((_, i) => (
@@ -108,15 +85,15 @@ const Onboarding: React.FC<OnboardingProps> = ({ onFinish }) => {
                 />
               ))}
             </View>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={styles.nextButton}
               onPress={goToNextSlide}
             >
               <Ionicons name="arrow-forward" size={22} color={theme.color.light} />
             </TouchableOpacity>
           </View>
-        )}
+        </View>
       </View>
     )
   }
@@ -157,59 +134,52 @@ const styles = StyleSheet.create({
   slide: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
+    justifyContent: 'flex-end',
+    padding: 30,
+    marginBottom: 50
   },
   image: {
-    width: width * 0.7,
-    height: width * 0.7,
-    marginBottom: 40,
+    width: width,
+    height: width,
+    marginBottom: 0,
   },
-  logoContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 40,
-  },
-  logo: {
-    width: 80,
-    height: 80,
-    tintColor: theme.color.primary,
-  },
-  logoText: {
-    color: theme.color.primary,
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginTop: 10,
+  card: {
+    backgroundColor: '#F5F7FF',
+    width: '100%',
+    padding: 20,
+    borderRadius: 15,
+    marginTop: 0,
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
     color: theme.color.dark,
-    textAlign: 'center',
-    marginBottom: 20,
+    textAlign: 'left',
+    marginBottom: 8,
+    marginTop: 48,
   },
   description: {
     fontSize: 16,
     color: theme.color.darkGray,
     textAlign: 'center',
-    marginBottom: 30,
+    marginBottom: 36,
+    paddingHorizontal: 15,
   },
   paginationContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    paddingHorizontal: 20,
-    marginTop: 40,
   },
   pagination: {
     flexDirection: 'row',
+    alignItems: 'center',
   },
   paginationDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginHorizontal: 5,
+    width: 12,
+    height: 4,
+    borderRadius: 4,
+    marginHorizontal: 2,
   },
   paginationDotActive: {
     backgroundColor: theme.color.primary,
@@ -219,40 +189,11 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     backgroundColor: theme.color.primary,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  buttonContainer: {
-    width: '100%',
-    marginTop: 30,
-  },
-  loginButton: {
-    backgroundColor: theme.color.primary,
-    paddingVertical: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  loginButtonText: {
-    color: theme.color.light,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  signUpButton: {
-    backgroundColor: theme.color.light,
-    paddingVertical: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: theme.color.lightGray,
-  },
-  signUpButtonText: {
-    color: theme.color.dark,
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 })
 
