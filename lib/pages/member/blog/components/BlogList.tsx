@@ -1,13 +1,17 @@
+import { useRouter } from "expo-router";
 import React from "react";
-import { Image, Text, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 
 export default function BlogList({
   item,
 }: {
-  item: { title: string; summary: string; image: string };
+  item: { id: string; title: string; summary: string; image: string };
 }) {
+  const router = useRouter();
+
   return (
-    <View
+    <TouchableOpacity
+      onPress={() => router.navigate(`/blog/${item.id}`)}
       style={{
         flexDirection: "row",
         alignItems: "center",
@@ -26,6 +30,6 @@ export default function BlogList({
         <Text style={{ fontWeight: "bold", fontSize: 16 }}>{item.title}</Text>
         <Text style={{ color: "#555", marginTop: 4 }}>{item.summary}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }

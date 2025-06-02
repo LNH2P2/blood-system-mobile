@@ -11,6 +11,12 @@ export default function MemberLayout() {
       }}
     >
       <Tabs.Screen
+        name='blog/[id]'
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
         name='blog/index'
         options={{
           href: null,
