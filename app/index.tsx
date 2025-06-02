@@ -1,15 +1,29 @@
+import Onboarding from '@/lib/components/Onboarding'
+import SplashScreen from '@/lib/components/SplashScreen'
 import { useRouter } from 'expo-router'
+import { useState } from 'react'
 import { Button, View } from 'react-native'
 
 export default function Index() {
   const router = useRouter()
+  const [showSplash, setShowSplash] = useState(true)
+  const [showOnboarding, setShowOnboarding] = useState(true)
+
+  if (showSplash) {
+    return <SplashScreen onFinish={() => setShowSplash(false)} />
+  }
+
+  if (showOnboarding) {
+    return <Onboarding onFinish={() => setShowOnboarding(false)} />
+  }
 
   return (
     <View
       style={{
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        gap: 10
       }}
     >
       <Button
@@ -21,6 +35,8 @@ export default function Index() {
         title='Đặt lịch'
         onPress={() => router.navigate('/(member)/donation-request')}
       />
+      <Button title='Show Splash Screen' onPress={() => setShowSplash(true)} />
+      <Button title='Show Onboarding' onPress={() => setShowOnboarding(true)} />
     </View>
   )
 }
