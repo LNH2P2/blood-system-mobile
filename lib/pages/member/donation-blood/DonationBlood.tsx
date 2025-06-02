@@ -14,7 +14,7 @@ import {
 
 const DonationBlood = () => {
   const router = useRouter()
-  const { selectedPlace } = useBooking()
+  const { selectedPlace, setSelectedPlace } = useBooking()
   const currentDate = new Date()
   const [selectedDate, setSelectedDate] = useState<number | null>(
     currentDate.getDate()
@@ -196,23 +196,31 @@ const DonationBlood = () => {
       </ScrollView>
 
       {/* Nút đặt lịch - Fixed ở đáy màn hình */}
-      <View style={styles.bottomButtonContainer}>
-        <SubmitButton
-          onPress={() => {
-            if (selectedDate && selectedPlace) {
-              // Xử lý logic đặt lịch ở đây
-              console.log(
-                `Đặt lịch hiến máu vào ngày ${selectedDate} tại ${selectedPlace.title}`
-              )
-            } else {
-              alert('Vui lòng chọn ngày và địa điểm')
-            }
 
-            router.push('/(member)/donation-request')
-          }}
-          isSubmitting={false}
-        />
-      </View>
+      {selectedDate && selectedPlace && (
+        <View style={styles.bottomButtonContainer}>
+          <SubmitButton
+            onPress={() => {
+              if (selectedDate && selectedPlace) {
+                // Xử lý logic đặt lịch ở đây
+                console.log(
+                  `Đặt lịch hiến máu vào ngày ${selectedDate} tại ${selectedPlace.title}`
+                )
+              } else {
+                alert('Vui lòng chọn ngày và địa điểm')
+              }
+
+              setSelectedDate(null) // Reset ngày đã chọn
+              setCurrentMonth(currentDate.getMonth()) // Reset về tháng hiện tại
+              setCurrentYear(currentDate.getFullYear()) // Reset về năm hiện tại
+              setSelectedPlace(null) // Reset địa điểm đã chọn
+
+              router.push('/(member)/donation-request')
+            }}
+            isSubmitting={false}
+          />
+        </View>
+      )}
     </SafeAreaView>
   )
 }
