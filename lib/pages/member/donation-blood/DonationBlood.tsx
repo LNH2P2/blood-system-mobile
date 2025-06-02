@@ -1,7 +1,10 @@
+import { useBooking } from '@/lib/contexts/BookingContext'
 import { theme } from '@/lib/theme'
-import { router } from 'expo-router'
+import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import {
+  ActivityIndicator,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,6 +13,8 @@ import {
 } from 'react-native'
 
 const DonationBlood = () => {
+  const router = useRouter()
+  const { selectedPlace } = useBooking()
   const currentDate = new Date()
   const [selectedDate, setSelectedDate] = useState<number | null>(
     currentDate.getDate()
@@ -97,7 +102,7 @@ const DonationBlood = () => {
             ]}
             onPress={() => {
               setSelectedDate(day)
-              router.push('/(member)/donation-request/donation-blood')
+              router.push('/(member)/donation-request/donation-place')
             }}
           >
             <Text
@@ -118,10 +123,11 @@ const DonationBlood = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
       >
         {/* Header với navigation tháng */}
         <View style={styles.calendarHeader}>
@@ -157,27 +163,93 @@ const DonationBlood = () => {
           <View style={styles.daysGrid}>{renderCalendar()}</View>
         </View>
 
+        {/* Section chọn địa điểm */}
         <View style={styles.locationSection}>
-          <TouchableOpacity style={styles.locationButton}>
-            <Text style={styles.locationButtonText}>Chọn địa điểm</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.addressButton}>
-            <Text style={styles.addressButtonText}>Địa điểm đến</Text>
+          <TouchableOpacity
+            style={[
+              styles.locationButton,
+              selectedPlace && styles.selectedLocationButton
+            ]}
+            onPress={() =>
+              router.push('/(member)/donation-request/donation-place')
+            }
+          >
+            {selectedPlace ? (
+              <View>
+                <Text style={styles.selectedLocationTitle} numberOfLines={2}>
+                  {selectedPlace.title}
+                </Text>
+                {selectedPlace.address && (
+                  <Text
+                    style={styles.selectedLocationAddress}
+                    numberOfLines={2}
+                  >
+                    {selectedPlace.address}
+                  </Text>
+                )}
+              </View>
+            ) : (
+              <Text style={styles.locationButtonText}>Chọn địa điểm</Text>
+            )}
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </View>
+
+      {/* Nút đặt lịch - Fixed ở đáy màn hình */}
+      <View style={styles.bottomButtonContainer}>
+        <SubmitButton
+          onPress={() => {
+            if (selectedDate && selectedPlace) {
+              // Xử lý logic đặt lịch ở đây
+              console.log(
+                `Đặt lịch hiến máu vào ngày ${selectedDate} tại ${selectedPlace.title}`
+              )
+            } else {
+              alert('Vui lòng chọn ngày và địa điểm')
+            }
+
+            router.push('/(member)/donation-request')
+          }}
+          isSubmitting={false}
+        />
+      </View>
+    </SafeAreaView>
   )
 }
+
+interface SubmitButtonProps {
+  onPress: () => void
+  isSubmitting: boolean
+}
+
+const SubmitButton = ({ onPress, isSubmitting }: SubmitButtonProps) => (
+  <TouchableOpacity
+    style={[styles.submitButton, isSubmitting && styles.submitButtonDisabled]}
+    onPress={onPress}
+    disabled={isSubmitting}
+  >
+    {isSubmitting ? (
+      <View style={styles.submitButtonContent}>
+        <ActivityIndicator size='small' color='white' />
+        <Text style={styles.submitButtonText}>Đang xử lý...</Text>
+      </View>
+    ) : (
+      <Text style={styles.submitButtonText}>Đặt lịch</Text>
+    )}
+  </TouchableOpacity>
+)
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    minHeight: '100%',
     backgroundColor: '#f5f5f5'
   },
   scrollView: {
     flex: 1
+  },
+  scrollContent: {
+    paddingBottom: 80 // Đảm bảo nội dung không bị che bởi nút đặt lịch
   },
   calendarHeader: {
     flexDirection: 'row',
@@ -290,6 +362,20 @@ const styles = StyleSheet.create({
     color: '#666',
     fontWeight: '500'
   },
+  selectedLocationButton: {
+    borderWidth: 1,
+    borderColor: theme.color.primary
+  },
+  selectedLocationTitle: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500'
+  },
+  selectedLocationAddress: {
+    fontSize: 14,
+    color: '#666',
+    fontWeight: '400'
+  },
   addressButton: {
     backgroundColor: 'white',
     borderRadius: 8,
@@ -308,6 +394,74 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#999',
     fontWeight: '500'
+  },
+  bookingButtonContainer: {
+    margin: 16,
+    alignItems: 'center'
+  },
+  bookingButton: {
+    backgroundColor: theme.color.primary,
+    borderRadius: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5
+  },
+  bookingButtonText: {
+    fontSize: 18,
+    color: 'white',
+    fontWeight: 'bold'
+  },
+  selectedPlaceInfo: {
+    marginTop: 8
+  },
+  selectedPlaceAddress: {
+    fontSize: 14,
+    color: '#333',
+    fontWeight: '500'
+  },
+  selectedPlaceTime: {
+    fontSize: 12,
+    color: '#999',
+    fontWeight: '400'
+  },
+  submitButton: {
+    backgroundColor: theme.color.primary,
+    borderRadius: 8,
+    paddingVertical: 16,
+    alignItems: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2
+  },
+  submitButtonDisabled: {
+    backgroundColor: '#9ca3af'
+  },
+  submitButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  submitButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 8
+  },
+  bottomButtonContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 16,
+    paddingBottom: 16
   }
 })
 
