@@ -119,7 +119,9 @@ export default function DonationRequestForm() {
 
       <View style={styles.buttonContainer}>
         <SubmitButton
-          onPress={() => router.push('/(member)/profile')}
+          onPress={() =>
+            router.push('/(member)/donation-request/donation-blood')
+          }
           isSubmitting={isSubmitting}
         />
       </View>
