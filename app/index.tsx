@@ -26,15 +26,19 @@ export default function Index() {
         gap: 10
       }}
     >
-      <Button
+      {/* <Button
         title='Member'
-        onPress={() => router.navigate('/(member)/profile')}
-      />
+        onPress={() => router.navigate('/')}
+      /> */}
       <Button title='Admin' onPress={() => router.navigate('/(admin)')} />
       <Button
-        title='Đặt lịch'
-        onPress={() => router.navigate('/(member)/donation-request')}
+        title='Trang chủ'
+        onPress={() => router.navigate('/(tabs)/homepage')}
       />
+      {/* <Button
+        title='Đặt lịch'
+        onPress={() => router.navigate('/(donation-request)')}
+      /> */}
       <Button title='Show Splash Screen' onPress={() => setShowSplash(true)} />
       <Button title='Show Onboarding' onPress={() => setShowOnboarding(true)} />
     </View>
