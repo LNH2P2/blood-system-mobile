@@ -15,7 +15,7 @@ export default function MemberLayout() {
         }}
       >
         <Stack.Screen
-          name='donation-request/index'
+          name='donation-request'
           options={{
             title: 'Đặt lịch',
             headerShown: true,
@@ -31,7 +31,7 @@ export default function MemberLayout() {
             headerTintColor: 'white',
             headerLeft: () => (
               <TouchableOpacity
-                onPress={() => router.push('/')}
+                onPress={() => router.push('/(tabs)/homepage')}
                 style={{
                   marginLeft: 16,
                   padding: 8
@@ -43,7 +43,7 @@ export default function MemberLayout() {
           }}
         />
         <Stack.Screen
-          name='donation-request/donation-blood'
+          name='donation-blood'
           options={{
             title: 'Đặt lịch hiến Máu',
             headerShown: true,
@@ -71,7 +71,7 @@ export default function MemberLayout() {
           }}
         />
         <Stack.Screen
-          name='donation-request/donation-place'
+          name='donation-place'
           options={{
             title: 'Địa điểm đặt lịch',
             headerShown: true,

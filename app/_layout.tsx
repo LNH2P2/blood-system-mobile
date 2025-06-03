@@ -10,7 +10,7 @@ export default function RootLayout() {
       <AlertProvider>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name='index' />
-          <Stack.Screen name='(member)' />
+          <Stack.Screen name='(tabs)' />
           <Stack.Screen name='(admin)' />
           <Stack.Screen name='(donation-request)' />
         </Stack>
