@@ -32,8 +32,12 @@ export default function Index() {
       />
       <Button title='Admin' onPress={() => router.navigate('/(admin)')} />
       <Button
+        title='Trang chủ'
+        onPress={() => router.navigate('/(member)/homepage')}
+      />
+      <Button
         title='Đặt lịch'
-        onPress={() => router.navigate('/(member)/donation-request')}
+        onPress={() => router.navigate('/(donation-request)')}
       />
       <Button title='Show Splash Screen' onPress={() => setShowSplash(true)} />
       <Button title='Show Onboarding' onPress={() => setShowOnboarding(true)} />

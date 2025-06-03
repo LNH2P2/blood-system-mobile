@@ -12,6 +12,7 @@ export default function RootLayout() {
           <Stack.Screen name='index' />
           <Stack.Screen name='(member)' />
           <Stack.Screen name='(admin)' />
+          <Stack.Screen name='(donation-request)' />
         </Stack>
       </AlertProvider>
     </QueryClientProvider>

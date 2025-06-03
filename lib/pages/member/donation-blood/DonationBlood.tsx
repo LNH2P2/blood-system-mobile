@@ -102,7 +102,7 @@ const DonationBlood = () => {
             ]}
             onPress={() => {
               setSelectedDate(day)
-              router.push('/(member)/donation-request/donation-place')
+              router.push('/(donation-request)/donation-place')
             }}
           >
             <Text
@@ -170,9 +170,7 @@ const DonationBlood = () => {
               styles.locationButton,
               selectedPlace && styles.selectedLocationButton
             ]}
-            onPress={() =>
-              router.push('/(member)/donation-request/donation-place')
-            }
+            onPress={() => router.push('/(donation-request)/donation-place')}
           >
             {selectedPlace ? (
               <View>
@@ -210,12 +208,12 @@ const DonationBlood = () => {
                 alert('Vui lòng chọn ngày và địa điểm')
               }
 
-              setSelectedDate(null) // Reset ngày đã chọn
-              setCurrentMonth(currentDate.getMonth()) // Reset về tháng hiện tại
-              setCurrentYear(currentDate.getFullYear()) // Reset về năm hiện tại
-              setSelectedPlace(null) // Reset địa điểm đã chọn
+              setSelectedDate(null)
+              setCurrentMonth(currentDate.getMonth())
+              setCurrentYear(currentDate.getFullYear())
+              setSelectedPlace(null)
 
-              router.push('/(member)/donation-request')
+              router.push('/(donation-request)')
             }}
             isSubmitting={false}
           />
