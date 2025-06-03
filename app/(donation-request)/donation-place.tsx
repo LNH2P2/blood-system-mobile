@@ -1,1 +1,1 @@
-export { default } from '@/lib/pages/member/donation-place'
+export { default } from '@/lib/pages/donation-place'

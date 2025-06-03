@@ -1,13 +1,8 @@
 import { theme } from '@/lib/theme'
 import { Ionicons } from '@expo/vector-icons'
-import { useRouter } from 'expo-router'
-// import { theme } from "@/lib/theme";
-// import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from 'expo-router'
 
 export default function MemberLayout() {
-  const router = useRouter()
-
   return (
     <Tabs
       screenOptions={{
