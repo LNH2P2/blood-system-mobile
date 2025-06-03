@@ -55,7 +55,9 @@ export default function ServiceMenu() {
             flex: 1
           }}
           onPress={() => {
-            router.navigate('/(donation-request)/donation-request')
+            if (service.title === 'Đặt lịch') {
+              router.navigate('/(donation-request)/donation-request')
+            }
           }}
         >
           <View
