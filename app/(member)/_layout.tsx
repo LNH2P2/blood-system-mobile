@@ -1,110 +1,55 @@
-import { BookingProvider } from '@/lib/contexts/BookingContext'
-import { theme } from '@/lib/theme'
-import { Ionicons } from '@expo/vector-icons'
-import { Stack, useRouter } from 'expo-router'
-import { TouchableOpacity } from 'react-native'
+import { theme } from "@/lib/theme";
+import { Ionicons } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
 
 export default function MemberLayout() {
-  const router = useRouter()
-
   return (
-    <BookingProvider>
-      <Stack
-        screenOptions={{
-          headerShown: false
+    <Tabs
+      screenOptions={{
+        tabBarActiveTintColor: theme.color.primary,
+        headerShown: false,
+      }}
+    >
+      <Tabs.Screen
+        name='blog/[id]'
+        options={{
+          href: null,
         }}
-      >
-        <Stack.Screen
-          name='profile/index'
-          options={{
-            title: 'Hồ sơ'
-          }}
-        />
-        <Stack.Screen
-          name='donation-request/index'
-          options={{
-            title: 'Đặt lịch',
-            headerShown: true,
-            headerTitleAlign: 'center',
-            headerStyle: {
-              backgroundColor: theme.color.primary
-            },
-            headerTitleStyle: {
-              color: 'white',
-              fontWeight: 'bold',
-              fontSize: 18
-            },
-            headerTintColor: 'white',
-            headerLeft: () => (
-              <TouchableOpacity
-                onPress={() => router.push('/')}
-                style={{
-                  marginLeft: 16,
-                  padding: 8
-                }}
-              >
-                <Ionicons name='arrow-back' size={24} color='white' />
-              </TouchableOpacity>
-            )
-          }}
-        />
-        <Stack.Screen
-          name='donation-request/donation-blood'
-          options={{
-            title: 'Đặt lịch hiến Máu',
-            headerShown: true,
-            headerTitleAlign: 'center',
-            headerStyle: {
-              backgroundColor: theme.color.primary
-            },
-            headerTitleStyle: {
-              color: 'white',
-              fontWeight: 'bold',
-              fontSize: 18
-            },
-            headerTintColor: 'white',
-            headerLeft: () => (
-              <TouchableOpacity
-                onPress={() => router.back()}
-                style={{
-                  marginLeft: 16,
-                  padding: 8
-                }}
-              >
-                <Ionicons name='arrow-back' size={24} color='white' />
-              </TouchableOpacity>
-            )
-          }}
-        />
-        <Stack.Screen
-          name='donation-request/donation-place'
-          options={{
-            title: 'Địa điểm đặt lịch',
-            headerShown: true,
-            headerTitleAlign: 'center',
-            headerStyle: {
-              backgroundColor: theme.color.primary
-            },
-            headerTitleStyle: {
-              color: 'white',
-              fontWeight: 'bold',
-              fontSize: 18
-            },
-            headerTintColor: 'white',
-            headerLeft: () => (
-              <TouchableOpacity
-                onPress={() => router.back()}
-                style={{
-                  marginLeft: 16,
-                  padding: 8
-                }}
-              >
-                <Ionicons name='arrow-back' size={24} color='white' />
-              </TouchableOpacity>
-            )
-          }}
-        />
-      </Stack>
-    </BookingProvider>
-  )
+      />
+      <Tabs.Screen
+        name='blog/index'
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name='homepage/index'
+        options={{
+          title: "Trang chủ",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name='home' size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name='profile/index'
+        options={{
+          title: "Hồ sơ",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name='person' size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name='donation-request/index'
+        options={{
+          title: "Hiến máu",
+          headerShown: false, // Ẩn header mặc định cho tab Hiến máu
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name='heart' size={size} color={color} />
+          ),
+        }}
+      />
+    </Tabs>
+  );
 }
