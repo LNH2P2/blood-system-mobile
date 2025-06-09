@@ -1,62 +1,64 @@
-import { Ionicons } from '@expo/vector-icons'
-import { router } from 'expo-router'
-import React from 'react'
-import { Text, TouchableOpacity, View } from 'react-native'
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import React from "react";
+import { Text, TouchableOpacity, View } from "react-native";
 
 interface ServiceItem {
-  id: string
-  title: string
-  icon: keyof typeof Ionicons.glyphMap
-  color: string
+  id: string;
+  title: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  color: string;
 }
 
 const services: ServiceItem[] = [
   {
-    id: '1',
-    title: 'Đặt lịch',
-    icon: 'medical',
-    color: '#4CAF50'
+    id: "1",
+    title: "Đặt lịch",
+    icon: "medical",
+    color: "#4CAF50",
   },
   {
-    id: '2',
-    title: 'Pharmacy',
-    icon: 'medical-outline',
-    color: '#2196F3'
+    id: "2",
+    title: "Pharmacy",
+    icon: "medical-outline",
+    color: "#2196F3",
   },
   {
-    id: '3',
-    title: 'Hospital',
-    icon: 'business',
-    color: '#FF9800'
+    id: "3",
+    title: "Hospital",
+    icon: "business",
+    color: "#FF9800",
   },
   {
-    id: '4',
-    title: 'Ambulance',
-    icon: 'car',
-    color: '#F44336'
-  }
-]
+    id: "4",
+    title: "Ambulance",
+    icon: "car",
+    color: "#F44336",
+  },
+];
 
 export default function ServiceMenu() {
   return (
     <View
       style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+        flexDirection: "row",
+        justifyContent: "space-between",
         marginBottom: 20,
-        paddingHorizontal: 10
+        paddingHorizontal: 10,
       }}
     >
       {services.map((service) => (
         <TouchableOpacity
           key={service.id}
           style={{
-            alignItems: 'center',
-            flex: 1
+            alignItems: "center",
+            flex: 1,
           }}
           onPress={() => {
-            if (service.title === 'Đặt lịch') {
-              router.navigate('/(donation-request)/donation-request')
+            if (service.title === "Đặt lịch") {
+              router.navigate("/(donation-request)/donation-request");
+            } else if (service.title === "Hospital") {
+              router.navigate("/(hospital)/hospital-search");
             }
           }}
         >
@@ -66,9 +68,9 @@ export default function ServiceMenu() {
               height: 60,
               borderRadius: 15,
               backgroundColor: `${service.color}20`,
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginBottom: 8
+              justifyContent: "center",
+              alignItems: "center",
+              marginBottom: 8,
             }}
           >
             <Ionicons name={service.icon} size={30} color={service.color} />
@@ -76,8 +78,8 @@ export default function ServiceMenu() {
           <Text
             style={{
               fontSize: 12,
-              color: '#666',
-              textAlign: 'center'
+              color: "#666",
+              textAlign: "center",
             }}
           >
             {service.title}
@@ -85,5 +87,5 @@ export default function ServiceMenu() {
         </TouchableOpacity>
       ))}
     </View>
-  )
+  );
 }
