@@ -1,13 +1,14 @@
 import axios from "axios";
-import { API_BASE_URL } from 'react-native-dotenv';
+import Constants from 'expo-constants';
 
+const { API_BASE_URL } = Constants?.expoConfig?.extra;
 class AxiosInstance {
   api;
 
   constructor() {
-
+    console.log("Initializing AxiosInstance...",API_BASE_URL);
     this.api = axios.create({
-      baseURL: API_BASE_URL, // Thay thế bằng URL API của bạn
+      baseURL: "fjkldsjalf", // Thay thế bằng URL API của bạn
       timeout: 10000,
     });
 
