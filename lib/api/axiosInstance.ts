@@ -8,14 +8,14 @@ class AxiosInstance {
   constructor() {
     console.log("Initializing AxiosInstance...",API_BASE_URL);
     this.api = axios.create({
-      baseURL: "fjkldsjalf", // Thay thế bằng URL API của bạn
+      baseURL: API_BASE_URL, // Thay thế bằng URL API của bạn
       timeout: 10000,
     });
 
     // this.api.interceptors.request.use((config) => {
     //   // Giả sử lấy token từ AsyncStorage hoặc nơi khác
     //   const token = 'your_token_here';
-    //   if (token) {
+    //   if (token) {d
     //     config.headers.Authorization = `Bearer ${token}`;
     //   }
     //   return config;
