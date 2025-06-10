@@ -8,7 +8,7 @@ class UserApi {
   async getProfile() {
     try {
       const res = await axiosInstance.get(`${userURL}`);
-      return res.data;
+      return res.data.data;
     } catch (error) {
       console.error("Error fetching user profile:", error);
       throw error; // Rethrow the error to handle it in the calling function
@@ -17,7 +17,7 @@ class UserApi {
   async getProfileById(id: string): Promise<User> {
     try {
       const res = await axiosInstance.get(`${userURL}/${id}`);
-      return res.data;
+      return res.data.data;
     } catch (error) {
       console.error("Error fetching user profile by ID:", error);
       throw error; // Rethrow the error to handle it in the calling function
@@ -27,7 +27,7 @@ class UserApi {
   async updateProfile(userProfile: Partial<User>) {
     try {
       const res = await axiosInstance.patch(`${userURL}/${userProfile._id}`, userProfile);
-      return res.data;
+      return res.data.data;
     } catch (error) {
       console.log("Error updating user profile:", error);
       throw error; // Rethrow the error to handle it in the calling function
