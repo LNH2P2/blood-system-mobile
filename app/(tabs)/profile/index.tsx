@@ -12,7 +12,7 @@ import {
 } from "react-native";
 const Profile = () => {
   const navigation = useRouter();
-  const { data, isLoading } = useUserById("683c5ca6f873e56e1fecebe1");
+  const { data, isLoading } = useUserById("6847e15dca2f9a6fd6388d3d");
   const handleUpdateProfile = () => {
     navigation.navigate({
       pathname: "/profile/user-profile",
