@@ -15,6 +15,7 @@ import ListRequest from '@/lib/pages/donation-request/components/ListRequest'
 //   FormErrors,
 //   initialFormData
 // } from '@/lib/pages/member/donation-request/types'
+import { useGetListDonationReqQuery } from '@/lib/hooks/api/useDonationRequest'
 import { theme } from '@/lib/theme'
 import { useRouter } from 'expo-router'
 
@@ -23,6 +24,8 @@ export default function DonationRequestForm() {
   // const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
+  const { data } = useGetListDonationReqQuery()
+  console.log('data', data)
   // const alert = useAlert()
 
   // const validateForm = (): boolean => {
