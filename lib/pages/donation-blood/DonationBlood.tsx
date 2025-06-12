@@ -1,4 +1,5 @@
 import { useBooking } from '@/lib/contexts/BookingContext'
+import { useNotifications } from '@/lib/hooks/useNotifications'
 import { theme } from '@/lib/theme'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
@@ -15,12 +16,14 @@ import {
 const DonationBlood = () => {
   const router = useRouter()
   const { selectedPlace, setSelectedPlace } = useBooking()
+  const { scheduleAppointmentReminder } = useNotifications()
   const currentDate = new Date()
   const [selectedDate, setSelectedDate] = useState<number | null>(
     currentDate.getDate()
-  ) // Sử dụng ngày hiện tại
-  const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth()) // Tháng hiện tại
-  const [currentYear, setCurrentYear] = useState(currentDate.getFullYear()) // Năm hiện tại
+  )
+  const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth())
+  const [currentYear, setCurrentYear] = useState(currentDate.getFullYear())
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const months = [
     'January',
@@ -122,6 +125,61 @@ const DonationBlood = () => {
     return days
   }
 
+  const handleBookingSubmit = async () => {
+    if (!selectedDate || !selectedPlace) {
+      alert('Vui lòng chọn ngày và địa điểm')
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      // Tạo appointment date từ selectedDate, currentMonth, currentYear
+      const appointmentDate = new Date(
+        currentYear,
+        currentMonth,
+        selectedDate,
+        9,
+        0
+      ) // 9:00 AM default
+
+      // Tạo appointment data
+      const appointmentData = {
+        id: `appointment_${Date.now()}`, // Generate unique ID
+        title: `Hiến máu tại ${selectedPlace.title}`,
+        date: appointmentDate
+      }
+
+      // Lên lịch thông báo cho cuộc hẹn
+      const notificationIds = await scheduleAppointmentReminder(
+        appointmentData.id,
+        appointmentData.date,
+        appointmentData.title
+      )
+
+      console.log('Đã lên lịch thông báo:', notificationIds)
+
+      // Reset form
+      setSelectedDate(null)
+      setCurrentMonth(currentDate.getMonth())
+      setCurrentYear(currentDate.getFullYear())
+      setSelectedPlace(null)
+
+      // Hiển thị thông báo thành công
+      alert(
+        'Đặt lịch hiến máu thành công! Bạn sẽ nhận được thông báo nhắc nhở trước khi đến hẹn.'
+      )
+
+      // Navigate back
+      router.push('/(donation-request)/donation-request')
+    } catch (error) {
+      console.error('Lỗi khi đặt lịch:', error)
+      alert('Có lỗi xảy ra khi đặt lịch. Vui lòng thử lại.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -193,29 +251,12 @@ const DonationBlood = () => {
         </View>
       </ScrollView>
 
-      {/* Nút đặt lịch - Fixed ở đáy màn hình */}
-
+      {/* Nút đặt lịch với notification */}
       {selectedDate && selectedPlace && (
         <View style={styles.bottomButtonContainer}>
           <SubmitButton
-            onPress={() => {
-              if (selectedDate && selectedPlace) {
-                // Xử lý logic đặt lịch ở đây
-                console.log(
-                  `Đặt lịch hiến máu vào ngày ${selectedDate} tại ${selectedPlace.title}`
-                )
-              } else {
-                alert('Vui lòng chọn ngày và địa điểm')
-              }
-
-              setSelectedDate(null)
-              setCurrentMonth(currentDate.getMonth())
-              setCurrentYear(currentDate.getFullYear())
-              setSelectedPlace(null)
-
-              router.push('/(donation-request)')
-            }}
-            isSubmitting={false}
+            onPress={handleBookingSubmit}
+            isSubmitting={isSubmitting}
           />
         </View>
       )}

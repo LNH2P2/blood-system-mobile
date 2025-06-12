@@ -1,52 +1,64 @@
-import 'dotenv/config';
+import 'dotenv/config'
 
 export default {
   expo: {
-    name: "mmabcdefg",
-    slug: "mmabcdefg",
-    version: "1.0.0",
-    orientation: "portrait",
-    icon: "./assets/images/icon.png",
-    scheme: "mmabcdefg",
-    userInterfaceStyle: "automatic",
+    name: 'mmabcdefg',
+    slug: 'mmabcdefg',
+    version: '1.0.0',
+    orientation: 'portrait',
+    icon: './assets/images/icon.png',
+    scheme: 'mmabcdefg',
+    userInterfaceStyle: 'automatic',
     newArchEnabled: true,
     ios: {
       supportsTablet: true,
-      bundleIdentifier: "com.wa2goose.ExpoQR2",
+      bundleIdentifier: 'com.wa2goose.ExpoQR2',
       infoPlist: {
-        NSCameraUsageDescription: "Ứng dụng cần quyền truy cập camera để quét mã QR.",
-        NSPhotoLibraryUsageDescription: "Ứng dụng cần quyền truy cập thư viện ảnh để tải lên ảnh."
+        NSCameraUsageDescription:
+          'Ứng dụng cần quyền truy cập camera để quét mã QR.',
+        NSPhotoLibraryUsageDescription:
+          'Ứng dụng cần quyền truy cập thư viện ảnh để tải lên ảnh.'
       }
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: "./assets/images/icon.png",
-        backgroundColor: "#ffffff"
+        foregroundImage: './assets/images/icon.png',
+        backgroundColor: '#ffffff'
       },
       edgeToEdgeEnabled: true,
       permissions: [
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
+        'CAMERA',
+        'READ_EXTERNAL_STORAGE',
+        'WRITE_EXTERNAL_STORAGE',
+        'RECEIVE_BOOT_COMPLETED',
+        'VIBRATE'
       ]
     },
     web: {
-      bundler: "metro",
-      output: "static",
-      favicon: "./assets/images/icon.png"
+      bundler: 'metro',
+      output: 'static',
+      favicon: './assets/images/icon.png'
     },
     plugins: [
-      "expo-router",
+      'expo-router',
       [
-        "expo-splash-screen",
+        'expo-splash-screen',
         {
-          "image": "./assets/images/icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#199A8E"
+          image: './assets/images/icon.png',
+          imageWidth: 200,
+          resizeMode: 'contain',
+          backgroundColor: '#199A8E'
         }
       ],
-      "expo-camera"
+      'expo-camera',
+      [
+        'expo-notifications',
+        {
+          icon: './assets/images/icon.png',
+          color: '#199A8E',
+          defaultChannel: 'default'
+        }
+      ]
     ],
     experiments: {
       typedRoutes: true
@@ -55,4 +67,4 @@ export default {
       API_BASE_URL: process.env.API_BASE_URL
     }
   }
-};
+}
