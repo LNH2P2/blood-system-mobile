@@ -9,7 +9,7 @@ import {
 
 // Types
 // import { useAlert } from '@/lib/hooks/useAlert'
-import ListRequest from '@/lib/pages/member/donation-request/components/ListRequest'
+import ListRequest from '@/lib/pages/donation-request/components/ListRequest'
 // import {
 //   FormData,
 //   FormErrors,
@@ -119,9 +119,7 @@ export default function DonationRequestForm() {
 
       <View style={styles.buttonContainer}>
         <SubmitButton
-          onPress={() =>
-            router.push('/(member)/donation-request/donation-blood')
-          }
+          onPress={() => router.push('/(donation-request)/donation-blood')}
           isSubmitting={isSubmitting}
         />
       </View>
