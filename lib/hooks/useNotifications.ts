@@ -32,7 +32,6 @@ export const useNotifications = () => {
         console.log('Notification response:', response)
         const data = response.notification.request.content.data
 
-        // Xử lý khi user tap vào notification
         if (data.type === 'appointment_reminder') {
           // Navigate to appointment screen hoặc show appointment details
           console.log(
@@ -62,8 +61,7 @@ export const useNotifications = () => {
           appointmentTitle
         )
 
-      // Có thể lưu notificationIds vào storage để quản lý sau này
-      console.log('Scheduled notifications:', notificationIds)
+      // console.log('Scheduled notifications:', notificationIds)
 
       return notificationIds
     } catch (error) {

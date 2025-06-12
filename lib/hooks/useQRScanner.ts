@@ -1,7 +1,7 @@
 import { Camera } from 'expo-camera'
 import { useState } from 'react'
 import { Alert, Linking, Platform } from 'react-native'
-import { FormData } from '../pages/member/donation-request/types'
+import { FormData } from '../pages/donation-request/types'
 
 export const useQRScanner = (
   onChange: (field: keyof FormData, value: any) => void,
@@ -14,26 +14,36 @@ export const useQRScanner = (
   const [scanned, setScanned] = useState(false)
 
   const openQRScanner = () => {
+    console.log('🔍 openQRScanner called - setting options modal to true')
     setOptionsModalVisible(true)
   }
 
   const closeQRScanner = () => {
+    console.log('❌ closeQRScanner called')
     setQrModalVisible(false)
     setScanned(false)
   }
 
   const openInAppScanner = async () => {
+    console.log('📱 openInAppScanner called - closing options modal')
     setOptionsModalVisible(false)
-    const { status } = await Camera.requestCameraPermissionsAsync()
-    setHasPermission(status === 'granted')
-    if (status === 'granted') {
-      setQrModalVisible(true)
-    } else {
-      Alert.alert(
-        'Không có quyền truy cập',
-        'Ứng dụng cần quyền truy cập camera để quét mã QR.',
-        [{ text: 'OK' }]
-      )
+    try {
+      const { status } = await Camera.requestCameraPermissionsAsync()
+      console.log('📷 Camera permission status:', status)
+      setHasPermission(status === 'granted')
+      if (status === 'granted') {
+        console.log('✅ Permission granted - opening QR modal')
+        setQrModalVisible(true)
+      } else {
+        console.log('❌ Permission denied - showing alert')
+        Alert.alert(
+          'Không có quyền truy cập',
+          'Ứng dụng cần quyền truy cập camera để quét mã QR.',
+          [{ text: 'OK' }]
+        )
+      }
+    } catch (error) {
+      console.error('❌ Error requesting camera permission:', error)
     }
   }
 

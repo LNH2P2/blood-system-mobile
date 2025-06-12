@@ -67,8 +67,7 @@ class NotificationService {
     } else {
       alert('Phải sử dụng thiết bị thật để nhận push notifications!')
     }
-
-    // console.log('token', token)
+    console.log('token', token)
 
     return token
   }
@@ -77,14 +76,13 @@ class NotificationService {
     appointmentId: string,
     appointmentDate: Date,
     appointmentTitle: string,
-    reminderMinutes: number = 60 // Nhắc nhở trước 60 phút
+    reminderMinutes: number = 60
   ): Promise<string | null> {
     try {
       const reminderDate = new Date(
         appointmentDate.getTime() - reminderMinutes * 60 * 1000
       )
 
-      // Kiểm tra nếu thời gian nhắc nhở đã qua
       if (reminderDate <= new Date()) {
         console.log('Thời gian nhắc nhở đã qua')
         return null
@@ -145,7 +143,6 @@ class NotificationService {
     return notificationIds
   }
 
-  // Hủy thông báo đã lên lịch
   async cancelNotification(notificationId: string): Promise<void> {
     try {
       await Notifications.cancelScheduledNotificationAsync(notificationId)
@@ -155,7 +152,6 @@ class NotificationService {
     }
   }
 
-  // Hủy tất cả thông báo cho một cuộc hẹn
   async cancelAppointmentNotifications(
     notificationIds: string[]
   ): Promise<void> {

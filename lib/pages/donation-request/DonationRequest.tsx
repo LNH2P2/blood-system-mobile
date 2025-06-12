@@ -20,8 +20,6 @@ export default function DonationRequestForm() {
   const { scheduleAppointmentReminder, sendTestNotification } =
     useNotifications()
 
-  console.log('data', data)
-
   // Hàm xử lý khi tạo appointment thành công
   const handleAppointmentCreated = async (appointmentData: {
     id: string
@@ -138,5 +136,42 @@ const styles = StyleSheet.create({
   },
   bottomSpacing: {
     height: 20
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)'
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 20,
+    elevation: 4
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center'
+  },
+  modalButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    backgroundColor: '#f1f5f9',
+    marginBottom: 10,
+    elevation: 1
+  },
+  modalButtonText: {
+    marginLeft: 10,
+    fontSize: 16,
+    color: '#333'
+  },
+  cancelButton: {
+    backgroundColor: '#fee2e2'
   }
 })
