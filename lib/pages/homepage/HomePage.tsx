@@ -28,7 +28,7 @@ export default function HomePage() {
         }}
       >
         <Text style={{ fontSize: 20, fontWeight: "bold" }}>Latest Blogs</Text>
-        <TouchableOpacity onPress={() => router.navigate("/(member)/blog")}>
+        <TouchableOpacity onPress={() => router.navigate("/blog")}>
           <Text style={{ color: "#007bff" }}>See all</Text>
         </TouchableOpacity>
       </View>
