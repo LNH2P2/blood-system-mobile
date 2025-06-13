@@ -1,5 +1,5 @@
 import { Camera } from 'expo-camera'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Alert, Linking, Platform } from 'react-native'
 import { FormData } from '../pages/donation-request/types'
 import { QRScannerData, QRScannerResult } from '../types'
@@ -14,7 +14,6 @@ export const useQRScanner = (
   const [hasPermission, setHasPermission] = useState<boolean | null>(null)
   const [scanned, setScanned] = useState(false)
 
-  // Cập nhật type cho QR data
   const [lastQRData, setLastQRData] = useState<QRScannerData | null>(null)
   const [qrRawData, setQrRawData] = useState<string | null>(null)
   const [qrResult, setQrResult] = useState<QRScannerResult | null>(null)
@@ -81,198 +80,194 @@ export const useQRScanner = (
     }
   }
 
-  const processQRData = (qrData: QRScannerData) => {
-    // Lưu processed data với type safety
-    setLastQRData(qrData)
+  const processQRData = useCallback(
+    (qrData: QRScannerData) => {
+      console.log('✅ Processing QR data:', qrData)
+      setLastQRData(qrData)
 
-    // Tạo result object với full type info
-    const result: QRScannerResult = {
-      success: true,
-      data: qrData,
-      rawData: qrRawData,
-      error: undefined
-    }
-    setQrResult(result)
+      const result: QRScannerResult = {
+        success: true,
+        data: qrData,
+        rawData: qrRawData,
+        error: undefined
+      }
+      setQrResult(result)
 
-    // Đóng modal ngay lập tức
-    setQrModalVisible(false)
-    setScanned(false)
+      setQrModalVisible(false)
+      setScanned(false)
 
-    // Cập nhật form data nếu có callback
-    if (onBulkChange) {
-      onBulkChange(qrData)
-    } else {
-      Object.entries(qrData).forEach(([key, value]) => {
-        onChange(key as keyof FormData, value)
-      })
-    }
+      if (onBulkChange) {
+        onBulkChange(qrData)
+      } else {
+        Object.entries(qrData).forEach(([key, value]) => {
+          onChange(key as keyof FormData, value)
+        })
+      }
 
-    let messageDetails = ''
-    if (qrData.fullName) messageDetails += `Họ tên: ${qrData.fullName}\n`
-    if (qrData.idNumber) messageDetails += `CCCD/CMND: ${qrData.idNumber}\n`
-    if (qrData.gender)
-      messageDetails += `Giới tính: ${
-        qrData.gender === 'male'
-          ? 'Nam'
-          : qrData.gender === 'female'
-          ? 'Nữ'
-          : qrData.gender
-      }\n`
-    if (qrData.dateOfBirth && formatDate)
-      messageDetails += `Ngày sinh: ${formatDate(qrData.dateOfBirth)}\n`
-    if (qrData.address) messageDetails += `Địa chỉ: ${qrData.address}\n`
-    if (qrData.phoneNumber)
-      messageDetails += `Số điện thoại: ${qrData.phoneNumber}\n`
-    if (qrData.email) messageDetails += `Email: ${qrData.email}`
+      let messageDetails = ''
+      if (qrData.fullName) messageDetails += `Họ tên: ${qrData.fullName}\n`
+      if (qrData.idNumber) messageDetails += `CCCD/CMND: ${qrData.idNumber}\n`
+      if (qrData.gender)
+        messageDetails += `Giới tính: ${
+          qrData.gender === 'male'
+            ? 'Nam'
+            : qrData.gender === 'female'
+            ? 'Nữ'
+            : qrData.gender
+        }\n`
+      if (qrData.dateOfBirth && formatDate)
+        messageDetails += `Ngày sinh: ${formatDate(qrData.dateOfBirth)}\n`
+      if (qrData.address) messageDetails += `Địa chỉ: ${qrData.address}\n`
+      if (qrData.phoneNumber)
+        messageDetails += `Số điện thoại: ${qrData.phoneNumber}\n`
+      if (qrData.email) messageDetails += `Email: ${qrData.email}`
+    },
+    [qrRawData, onBulkChange, onChange, formatDate]
+  )
 
-    Alert.alert(
-      'Đã quét thành công',
-      `Thông tin đã được điền tự động:\n\n${messageDetails}`,
-      [{ text: 'OK' }]
-    )
-  }
+  const handleBarCodeScanned = useCallback(
+    ({ type, data }: { type: string; data: string }) => {
+      if (scanned) {
+        return
+      }
 
-  const handleBarCodeScanned = ({
-    type,
-    data
-  }: {
-    type: string
-    data: string
-  }) => {
-    // Ngăn multiple scans
-    if (scanned) {
-      return
-    }
+      console.log('📷 QR Code scanned:', data)
 
-    console.log('📷 QR Code scanned:', data)
-    setScanned(true)
-    setQrRawData(data)
+      setScanned(true)
+      setQrRawData(data)
 
-    try {
-      // Xử lý dữ liệu QR dạng CCCD/CMND của Việt Nam
-      if (data.includes('|')) {
-        const parts = data.split('|')
-        const qrData: QRScannerData = {}
+      try {
+        // Xử lý dữ liệu QR dạng CCCD/CMND của Việt Nam
+        if (data.includes('|')) {
+          const parts = data.split('|')
+          const qrData: QRScannerData = {}
 
-        // CCCD
-        let idNumber = parts[0].replace(/\|/g, '').trim()
-        if (idNumber) {
-          qrData.idNumber = idNumber
+          // CCCD
+          let idNumber = parts[0].replace(/\|/g, '').trim()
+          if (idNumber) {
+            qrData.idNumber = idNumber
+          }
+
+          // fullName
+          let fullNameIndex = -1
+          if (parts.length > 2 && parts[2].trim()) {
+            fullNameIndex = 2
+          } else if (parts.length > 1 && parts[1].trim()) {
+            fullNameIndex = 1
+          }
+
+          if (fullNameIndex >= 0) {
+            qrData.fullName = parts[fullNameIndex].trim()
+          }
+
+          // Date of Birth
+          if (parts.length > 3 && parts[3].trim()) {
+            const dobString = parts[3].trim()
+            if (dobString.length === 8) {
+              try {
+                const day = dobString.substring(0, 2)
+                const month = dobString.substring(2, 4)
+                const year = dobString.substring(4, 8)
+                const dateString = `${year}-${month}-${day}`
+                const dateOfBirth = new Date(dateString)
+
+                if (!isNaN(dateOfBirth.getTime())) {
+                  qrData.dateOfBirth = dateOfBirth
+                }
+              } catch (e) {
+                console.log('Không thể chuyển đổi ngày sinh:', parts[3])
+              }
+            }
+          }
+
+          // Gender
+          if (parts.length > 4 && parts[4].trim()) {
+            const genderText = parts[4].trim().toLowerCase()
+            if (genderText === 'nam') {
+              qrData.gender = 'male'
+            } else if (genderText === 'nữ' || genderText === 'nu') {
+              qrData.gender = 'female'
+            }
+          }
+
+          // Address
+          if (parts.length > 5 && parts[5].trim()) {
+            qrData.address = parts[5].trim()
+          }
+
+          processQRData(qrData)
+          return
         }
 
-        // Họ tên
-        let fullNameIndex = -1
-        if (parts.length > 2 && parts[2].trim()) {
-          fullNameIndex = 2
-        } else if (parts.length > 1 && parts[1].trim()) {
-          fullNameIndex = 1
-        }
+        try {
+          const parsedData = JSON.parse(data)
+          const qrData: QRScannerData = {}
 
-        if (fullNameIndex >= 0) {
-          qrData.fullName = parts[fullNameIndex].trim()
-        }
+          if (parsedData.fullName) qrData.fullName = parsedData.fullName
+          if (parsedData.idNumber) qrData.idNumber = parsedData.idNumber
+          if (parsedData.phoneNumber)
+            qrData.phoneNumber = parsedData.phoneNumber
+          if (parsedData.email) qrData.email = parsedData.email
+          if (parsedData.address) qrData.address = parsedData.address
 
-        // Ngày sinh
-        if (parts.length > 3 && parts[3].trim()) {
-          const dobString = parts[3].trim()
-          if (dobString.length === 8) {
+          if (parsedData.gender) {
+            qrData.gender = parsedData.gender
+          }
+
+          if (parsedData.dateOfBirth) {
             try {
-              const day = dobString.substring(0, 2)
-              const month = dobString.substring(2, 4)
-              const year = dobString.substring(4, 8)
-              const dateString = `${year}-${month}-${day}`
-              const dateOfBirth = new Date(dateString)
-
+              const dateOfBirth = new Date(parsedData.dateOfBirth)
               if (!isNaN(dateOfBirth.getTime())) {
                 qrData.dateOfBirth = dateOfBirth
               }
             } catch (e) {
-              console.log('Không thể chuyển đổi ngày sinh:', parts[3])
+              console.log('Invalid date format:', parsedData.dateOfBirth)
             }
           }
-        }
 
-        // Giới tính
-        if (parts.length > 4 && parts[4].trim()) {
-          const genderText = parts[4].trim().toLowerCase()
-          if (genderText === 'nam') {
-            qrData.gender = 'male'
-          } else if (genderText === 'nữ' || genderText === 'nu') {
-            qrData.gender = 'female'
-          }
+          processQRData(qrData)
+        } catch (jsonError) {
+          throw new Error('Invalid QR format')
         }
+      } catch (e) {
+        console.log('Không thể xử lý dữ liệu QR:', e)
 
-        // Địa chỉ
-        if (parts.length > 5 && parts[5].trim()) {
-          qrData.address = parts[5].trim()
+        const errorResult: QRScannerResult = {
+          success: false,
+          data: null,
+          rawData: data,
+          error: 'Định dạng mã QR không được hỗ trợ'
         }
+        setQrResult(errorResult)
 
-        processQRData(qrData)
-        return
+        setQrModalVisible(false)
+        setScanned(false)
+
+        Alert.alert(
+          'Thông báo',
+          'Định dạng mã QR không được hỗ trợ. Vui lòng nhập thông tin thủ công.'
+        )
       }
+    },
+    [scanned, processQRData]
+  )
 
-      // Xử lý dữ liệu QR dạng JSON
-      try {
-        const parsedData = JSON.parse(data)
-        const qrData: QRScannerData = {}
-
-        if (parsedData.fullName) qrData.fullName = parsedData.fullName
-        if (parsedData.idNumber) qrData.idNumber = parsedData.idNumber
-        if (parsedData.phoneNumber) qrData.phoneNumber = parsedData.phoneNumber
-        if (parsedData.email) qrData.email = parsedData.email
-        if (parsedData.address) qrData.address = parsedData.address
-
-        if (parsedData.gender) {
-          qrData.gender = parsedData.gender
-        }
-
-        if (parsedData.dateOfBirth) {
-          try {
-            const dateOfBirth = new Date(parsedData.dateOfBirth)
-            if (!isNaN(dateOfBirth.getTime())) {
-              qrData.dateOfBirth = dateOfBirth
-            }
-          } catch (e) {
-            console.log('Invalid date format:', parsedData.dateOfBirth)
-          }
-        }
-
-        processQRData(qrData)
-      } catch (jsonError) {
-        throw new Error('Invalid QR format')
-      }
-    } catch (e) {
-      console.log('Không thể xử lý dữ liệu QR:', e)
-
-      // Set error result
-      const errorResult: QRScannerResult = {
-        success: false,
-        data: null,
-        rawData: data,
-        error: 'Định dạng mã QR không được hỗ trợ'
-      }
-      setQrResult(errorResult)
-
-      setQrModalVisible(false)
-      setScanned(false)
-      Alert.alert(
-        'Thông báo',
-        'Định dạng mã QR không được hỗ trợ. Vui lòng nhập thông tin thủ công.'
-      )
-    }
-  }
-
-  // Thêm function để clear data với type safety
-  const clearQRData = (): void => {
+  const clearQRData = useCallback((): void => {
     setLastQRData(null)
     setQrRawData(null)
     setQrResult(null)
-  }
+    setScanned(false)
+  }, [])
 
-  // Thêm getter functions với type safety
-  const getQRData = (): QRScannerData | null => lastQRData
-  const getQRResult = (): QRScannerResult | null => qrResult
-  const getRawData = (): string | null => qrRawData
+  const getQRData = useCallback(
+    (): QRScannerData | null => lastQRData,
+    [lastQRData]
+  )
+  const getQRResult = useCallback(
+    (): QRScannerResult | null => qrResult,
+    [qrResult]
+  )
+  const getRawData = useCallback((): string | null => qrRawData, [qrRawData])
 
   return {
     qrModalVisible,
