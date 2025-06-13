@@ -1,6 +1,7 @@
 import React, { createContext, ReactNode, useContext } from 'react'
 import { useQRScanner } from '../hooks/useQRScanner'
 import { FormData } from '../pages/donation-request/types'
+import { QRScannerData, QRScannerResult } from '../types'
 
 interface QRScannerContextType {
   openQRScanner: () => void
@@ -15,6 +16,14 @@ interface QRScannerContextType {
   openInAppScanner: () => Promise<void>
   openExternalScanner: () => Promise<void>
   handleBarCodeScanned: ({ type, data }: { type: string; data: string }) => void
+  // Cập nhật với type safety
+  lastQRData: QRScannerData | null
+  qrRawData: string | null
+  qrResult: QRScannerResult | null
+  clearQRData: () => void
+  getQRData: () => QRScannerData | null
+  getQRResult: () => QRScannerResult | null
+  getRawData: () => string | null
 }
 
 const QRScannerContext = createContext<QRScannerContextType | undefined>(

@@ -2,6 +2,7 @@ import { Camera } from 'expo-camera'
 import { useState } from 'react'
 import { Alert, Linking, Platform } from 'react-native'
 import { FormData } from '../pages/donation-request/types'
+import { QRScannerData, QRScannerResult } from '../types'
 
 export const useQRScanner = (
   onChange: (field: keyof FormData, value: any) => void,
@@ -13,8 +14,12 @@ export const useQRScanner = (
   const [hasPermission, setHasPermission] = useState<boolean | null>(null)
   const [scanned, setScanned] = useState(false)
 
+  // Cập nhật type cho QR data
+  const [lastQRData, setLastQRData] = useState<QRScannerData | null>(null)
+  const [qrRawData, setQrRawData] = useState<string | null>(null)
+  const [qrResult, setQrResult] = useState<QRScannerResult | null>(null)
+
   const openQRScanner = () => {
-    console.log('🔍 openQRScanner called - setting options modal to true')
     setOptionsModalVisible(true)
   }
 
@@ -29,13 +34,10 @@ export const useQRScanner = (
     setOptionsModalVisible(false)
     try {
       const { status } = await Camera.requestCameraPermissionsAsync()
-      console.log('📷 Camera permission status:', status)
       setHasPermission(status === 'granted')
       if (status === 'granted') {
-        console.log('✅ Permission granted - opening QR modal')
         setQrModalVisible(true)
       } else {
-        console.log('❌ Permission denied - showing alert')
         Alert.alert(
           'Không có quyền truy cập',
           'Ứng dụng cần quyền truy cập camera để quét mã QR.',
@@ -79,6 +81,57 @@ export const useQRScanner = (
     }
   }
 
+  const processQRData = (qrData: QRScannerData) => {
+    // Lưu processed data với type safety
+    setLastQRData(qrData)
+
+    // Tạo result object với full type info
+    const result: QRScannerResult = {
+      success: true,
+      data: qrData,
+      rawData: qrRawData,
+      error: undefined
+    }
+    setQrResult(result)
+
+    // Đóng modal ngay lập tức
+    setQrModalVisible(false)
+    setScanned(false)
+
+    // Cập nhật form data nếu có callback
+    if (onBulkChange) {
+      onBulkChange(qrData)
+    } else {
+      Object.entries(qrData).forEach(([key, value]) => {
+        onChange(key as keyof FormData, value)
+      })
+    }
+
+    let messageDetails = ''
+    if (qrData.fullName) messageDetails += `Họ tên: ${qrData.fullName}\n`
+    if (qrData.idNumber) messageDetails += `CCCD/CMND: ${qrData.idNumber}\n`
+    if (qrData.gender)
+      messageDetails += `Giới tính: ${
+        qrData.gender === 'male'
+          ? 'Nam'
+          : qrData.gender === 'female'
+          ? 'Nữ'
+          : qrData.gender
+      }\n`
+    if (qrData.dateOfBirth && formatDate)
+      messageDetails += `Ngày sinh: ${formatDate(qrData.dateOfBirth)}\n`
+    if (qrData.address) messageDetails += `Địa chỉ: ${qrData.address}\n`
+    if (qrData.phoneNumber)
+      messageDetails += `Số điện thoại: ${qrData.phoneNumber}\n`
+    if (qrData.email) messageDetails += `Email: ${qrData.email}`
+
+    Alert.alert(
+      'Đã quét thành công',
+      `Thông tin đã được điền tự động:\n\n${messageDetails}`,
+      [{ text: 'OK' }]
+    )
+  }
+
   const handleBarCodeScanned = ({
     type,
     data
@@ -86,19 +139,20 @@ export const useQRScanner = (
     type: string
     data: string
   }) => {
+    // Ngăn multiple scans
+    if (scanned) {
+      return
+    }
+
+    console.log('📷 QR Code scanned:', data)
     setScanned(true)
+    setQrRawData(data)
+
     try {
       // Xử lý dữ liệu QR dạng CCCD/CMND của Việt Nam
       if (data.includes('|')) {
         const parts = data.split('|')
-        console.log('QR parts length:', parts.length)
-        parts.forEach((part, index) => {
-          console.log(`Part ${index}:`, part)
-        })
-
-        const qrData: Partial<FormData> = {}
-
-        // Format: CCCD||Họ tên|Ngày sinh|Giới tính|Địa chỉ|Ngày cấp
+        const qrData: QRScannerData = {}
 
         // CCCD
         let idNumber = parts[0].replace(/\|/g, '').trim()
@@ -115,8 +169,7 @@ export const useQRScanner = (
         }
 
         if (fullNameIndex >= 0) {
-          const fullName = parts[fullNameIndex].trim()
-          qrData.fullName = fullName
+          qrData.fullName = parts[fullNameIndex].trim()
         }
 
         // Ngày sinh
@@ -127,10 +180,9 @@ export const useQRScanner = (
               const day = dobString.substring(0, 2)
               const month = dobString.substring(2, 4)
               const year = dobString.substring(4, 8)
-              const dateString = `${year}-${month}-${day}` // YYYY-MM-DD format
+              const dateString = `${year}-${month}-${day}`
               const dateOfBirth = new Date(dateString)
 
-              // Kiểm tra xem ngày có hợp lệ không
               if (!isNaN(dateOfBirth.getTime())) {
                 qrData.dateOfBirth = dateOfBirth
               }
@@ -152,8 +204,7 @@ export const useQRScanner = (
 
         // Địa chỉ
         if (parts.length > 5 && parts[5].trim()) {
-          const address = parts[5].trim()
-          qrData.address = address
+          qrData.address = parts[5].trim()
         }
 
         processQRData(qrData)
@@ -163,7 +214,7 @@ export const useQRScanner = (
       // Xử lý dữ liệu QR dạng JSON
       try {
         const parsedData = JSON.parse(data)
-        const qrData: Partial<FormData> = {}
+        const qrData: QRScannerData = {}
 
         if (parsedData.fullName) qrData.fullName = parsedData.fullName
         if (parsedData.idNumber) qrData.idNumber = parsedData.idNumber
@@ -192,57 +243,36 @@ export const useQRScanner = (
       }
     } catch (e) {
       console.log('Không thể xử lý dữ liệu QR:', e)
-      setTimeout(() => {
-        setQrModalVisible(false)
-        setScanned(false)
-        Alert.alert(
-          'Thông báo',
-          'Định dạng mã QR không được hỗ trợ. Vui lòng nhập thông tin thủ công.'
-        )
-      }, 500)
-    }
-  }
 
-  const processQRData = (qrData: Partial<FormData>) => {
-    // Cập nhật tất cả các trường cùng một lúc
-    if (onBulkChange) {
-      onBulkChange(qrData)
-    } else {
-      // Fallback nếu onBulkChange không được cung cấp
-      Object.entries(qrData).forEach(([key, value]) => {
-        onChange(key as keyof FormData, value)
-      })
-    }
+      // Set error result
+      const errorResult: QRScannerResult = {
+        success: false,
+        data: null,
+        rawData: data,
+        error: 'Định dạng mã QR không được hỗ trợ'
+      }
+      setQrResult(errorResult)
 
-    setTimeout(() => {
       setQrModalVisible(false)
       setScanned(false)
-
-      let messageDetails = ''
-      if (qrData.fullName) messageDetails += `Họ tên: ${qrData.fullName}\n`
-      if (qrData.idNumber) messageDetails += `CCCD/CMND: ${qrData.idNumber}\n`
-      if (qrData.gender)
-        messageDetails += `Giới tính: ${
-          qrData.gender === 'male'
-            ? 'Nam'
-            : qrData.gender === 'female'
-            ? 'Nữ'
-            : qrData.gender
-        }\n`
-      if (qrData.dateOfBirth && formatDate)
-        messageDetails += `Ngày sinh: ${formatDate(qrData.dateOfBirth)}\n`
-      if (qrData.address) messageDetails += `Địa chỉ: ${qrData.address}\n`
-      if (qrData.phoneNumber)
-        messageDetails += `Số điện thoại: ${qrData.phoneNumber}\n`
-      if (qrData.email) messageDetails += `Email: ${qrData.email}`
-
       Alert.alert(
-        'Đã quét thành công',
-        `Thông tin đã được điền tự động:\n\n${messageDetails}`,
-        [{ text: 'OK' }]
+        'Thông báo',
+        'Định dạng mã QR không được hỗ trợ. Vui lòng nhập thông tin thủ công.'
       )
-    }, 500)
+    }
   }
+
+  // Thêm function để clear data với type safety
+  const clearQRData = (): void => {
+    setLastQRData(null)
+    setQrRawData(null)
+    setQrResult(null)
+  }
+
+  // Thêm getter functions với type safety
+  const getQRData = (): QRScannerData | null => lastQRData
+  const getQRResult = (): QRScannerResult | null => qrResult
+  const getRawData = (): string | null => qrRawData
 
   return {
     qrModalVisible,
@@ -256,6 +286,15 @@ export const useQRScanner = (
     closeQRScanner,
     openInAppScanner,
     openExternalScanner,
-    handleBarCodeScanned
+    handleBarCodeScanned,
+
+    // Typed data returns
+    lastQRData,
+    qrRawData,
+    qrResult,
+    clearQRData,
+    getQRData,
+    getQRResult,
+    getRawData
   }
 }

@@ -35,6 +35,48 @@ const EditProfile = () => {
     dateOfBirth: ''
   })
 
+  const {
+    qrModalVisible,
+    setQrModalVisible,
+    optionsModalVisible,
+    setOptionsModalVisible,
+    hasPermission,
+    scanned,
+    setScanned,
+    closeQRScanner,
+    openInAppScanner,
+    openExternalScanner,
+    handleBarCodeScanned,
+    openQRScanner,
+    lastQRData, // ✨ Type: QRScannerData | null
+    clearQRData
+  } = useQRScannerContext()
+
+  // Auto-fill form từ QR data với type safety
+  useEffect(() => {
+    if (lastQRData) {
+      console.log('✅ QR Data received for user profile:')
+      console.log('Full Name:', lastQRData.fullName) // ✨ Type: string | undefined
+      console.log('Date of Birth:', lastQRData.dateOfBirth) // ✨ Type: Date | undefined
+
+      // Auto-fill fullName
+      if (lastQRData.fullName) {
+        handleChange('fullName', lastQRData.fullName)
+      }
+
+      // Auto-fill dateOfBirth (convert Date to string YYYY-MM-DD)
+      if (lastQRData.dateOfBirth) {
+        const dateString = lastQRData.dateOfBirth.toISOString().split('T')[0]
+        handleChange('dateOfBirth', dateString)
+      }
+
+      // Có thể thêm các field khác nếu cần
+      if (lastQRData.gender) {
+        handleChange('gender', lastQRData.gender)
+      }
+    }
+  }, [lastQRData])
+
   useEffect(() => {
     if (userProfile) {
       try {
@@ -67,20 +109,6 @@ const EditProfile = () => {
     gender: '',
     dateOfBirth: ''
   })
-
-  const {
-    qrModalVisible,
-    setQrModalVisible,
-    optionsModalVisible,
-    setOptionsModalVisible,
-    hasPermission,
-    scanned,
-    setScanned,
-    closeQRScanner,
-    openInAppScanner,
-    openExternalScanner,
-    handleBarCodeScanned
-  } = useQRScannerContext()
 
   const [showDatePicker, setShowDatePicker] = useState(false)
 

@@ -7,6 +7,7 @@ import { Image, ScrollView, StyleSheet, Text, View } from 'react-native'
 const Profile = () => {
   const navigation = useRouter()
   const { data, isLoading } = useUserById('6848f28cddd4f001f846e347')
+  console.log('data', data)
   const handleUpdateProfile = () => {
     navigation.navigate({
       pathname: '/profile/user-profile',
