@@ -1,4 +1,5 @@
-import { blogs } from "@/lib/pages/member/homepage/mock";
+import LoadingOverlay from "@/lib/components/Loading";
+import { useBlogById } from "@/lib/hooks/api/useBlog";
 import { Ionicons } from "@expo/vector-icons";
 import { usePathname } from "expo-router";
 import React from "react";
@@ -13,14 +14,13 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const { width, height } = Dimensions.get("window");
+const { height } = Dimensions.get("window");
 
 export default function BlogDetail() {
   const pathname = usePathname();
   const blogId = pathname.split("/").pop();
 
-  // Find the blog post by ID
-  const blog = blogs.find((b) => b.id === blogId);
+  const { data: blog, isLoading } = useBlogById(blogId as string);
 
   if (!blog) {
     return (
@@ -31,6 +31,10 @@ export default function BlogDetail() {
         </View>
       </SafeAreaView>
     );
+  }
+
+  if (isLoading) {
+    return <LoadingOverlay visible={isLoading} />;
   }
 
   return (

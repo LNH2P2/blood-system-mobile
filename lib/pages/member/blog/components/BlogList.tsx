@@ -1,17 +1,14 @@
+import { Blog } from "@/lib/types/blog";
 import { useRouter } from "expo-router";
 import React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
-export default function BlogList({
-  item,
-}: {
-  item: { id: string; title: string; summary: string; image: string };
-}) {
+export default function BlogList({ item }: Readonly<{ item: Blog }>) {
   const router = useRouter();
 
   return (
     <TouchableOpacity
-      onPress={() => router.navigate(`/blog/${item.id}`)}
+      onPress={() => router.navigate(`/blog/${item._id}`)}
       style={{
         flexDirection: "row",
         alignItems: "center",

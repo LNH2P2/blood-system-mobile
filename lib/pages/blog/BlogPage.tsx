@@ -1,17 +1,22 @@
+import LoadingOverlay from "@/lib/components/Loading";
+import { useBlogs } from "@/lib/hooks/api/useBlog";
 import React, { useState } from "react";
 import { FlatList, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { blogs } from "../homepage/mock";
 import BlogList from "./components/BlogList";
 
 export default function BlogPage() {
   const [search, setSearch] = useState("");
-
-  const filteredBlogs = blogs.filter(
+  const { data: blogs, isLoading } = useBlogs();
+  const filteredBlogs = blogs?.filter(
     (blog) =>
       blog.title.toLowerCase().includes(search.toLowerCase()) ||
       blog.summary.toLowerCase().includes(search.toLowerCase())
   );
+
+  if (isLoading) {
+    return <LoadingOverlay visible={isLoading} />;
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, padding: 16 }}>
@@ -29,7 +34,7 @@ export default function BlogPage() {
       />
       <FlatList
         data={filteredBlogs}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => <BlogList item={item} />}
       />
     </SafeAreaView>
