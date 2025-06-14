@@ -3,7 +3,7 @@ import { MedicalFacility } from "@/lib/types/hospital";
 import { Ionicons } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import { useLocalSearchParams } from "expo-router";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -30,7 +30,7 @@ export default function HospitalDetailScreen() {
   const loadHospital = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await hospitalApi.getHospitalById(hospitalId as string);
+      const data = await hospitalApi.getHospitalDetails(hospitalId as string);
       setHospital(data);
     } catch (error) {
       console.error("Error loading hospital:", error);
