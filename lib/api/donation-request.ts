@@ -1,10 +1,13 @@
 import axiosInstance from '@/lib/api/axiosInstance'
+import { DonationRequestResType } from '@/lib/types'
 
 export const URL_DONATION_REQUEST = '/donation-requests'
+
 const donationRequestApi = {
-  create() {
-    return axiosInstance.post(URL_DONATION_REQUEST, {})
-  },
+  create: (data: any = {}): Promise<DonationRequestResType> =>
+    axiosInstance
+      .post(URL_DONATION_REQUEST, data)
+      .then((response) => response.data),
 
   getListDonation() {
     // return axiosInstance.get(URL_DONATION_REQUEST)

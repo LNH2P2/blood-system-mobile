@@ -20,14 +20,12 @@ export default function DonationRequestForm() {
   const { scheduleAppointmentReminder, sendTestNotification } =
     useNotifications()
 
-  // Hàm xử lý khi tạo appointment thành công
   const handleAppointmentCreated = async (appointmentData: {
     id: string
     title: string
     date: Date
   }) => {
     try {
-      // Lên lịch thông báo cho cuộc hẹn
       const notificationIds = await scheduleAppointmentReminder(
         appointmentData.id,
         appointmentData.date,
@@ -36,7 +34,6 @@ export default function DonationRequestForm() {
 
       console.log('Đã lên lịch thông báo cho cuộc hẹn:', notificationIds)
 
-      // Hiển thị thông báo thành công
       alert(
         'Đặt lịch thành công! Bạn sẽ nhận được thông báo nhắc nhở trước khi đến hẹn.'
       )

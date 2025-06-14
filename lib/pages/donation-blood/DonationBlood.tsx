@@ -1,4 +1,5 @@
 import { useBooking } from '@/lib/contexts/BookingContext'
+import { useCreateDonationReqMutation } from '@/lib/hooks/api/useDonationRequest'
 import { useNotifications } from '@/lib/hooks/useNotifications'
 import { theme } from '@/lib/theme'
 import { useRouter } from 'expo-router'
@@ -24,6 +25,7 @@ const DonationBlood = () => {
   const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth())
   const [currentYear, setCurrentYear] = useState(currentDate.getFullYear())
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const createDonationReqMutation = useCreateDonationReqMutation()
 
   const months = [
     'January',
@@ -42,12 +44,10 @@ const DonationBlood = () => {
 
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
-  // Tính số ngày trong tháng
   const getDaysInMonth = (month: number, year: number) => {
     return new Date(year, month + 1, 0).getDate()
   }
 
-  // Tính ngày đầu tiên của tháng là thứ mấy
   const getFirstDayOfMonth = (month: number, year: number) => {
     return new Date(year, month, 1).getDay()
   }
@@ -81,7 +81,6 @@ const DonationBlood = () => {
 
     const days = []
 
-    // Thêm các ô trống cho những ngày của tháng trước
     for (let i = 0; i < firstDay; i++) {
       days.push(
         <View key={`empty-${i}`} style={styles.dayContainer}>
@@ -90,7 +89,6 @@ const DonationBlood = () => {
       )
     }
 
-    // Thêm các ngày trong tháng
     for (let day = 1; day <= daysInMonth; day++) {
       const isSelected = selectedDate === day
       const isToday = isCurrentMonth && today === day
@@ -126,6 +124,7 @@ const DonationBlood = () => {
   }
 
   const handleBookingSubmit = async () => {
+    if (createDonationReqMutation.isPending) return
     if (!selectedDate || !selectedPlace) {
       alert('Vui lòng chọn ngày và địa điểm')
       return
@@ -134,30 +133,32 @@ const DonationBlood = () => {
     setIsSubmitting(true)
 
     try {
-      // Tạo appointment date từ selectedDate, currentMonth, currentYear
       const appointmentDate = new Date(
         currentYear,
         currentMonth,
         selectedDate,
-        9,
+        10,
         0
-      ) // 9:00 AM default
+      ) // 10:00 AM default
 
-      // Tạo appointment data
       const appointmentData = {
-        id: `appointment_${Date.now()}`, // Generate unique ID
+        id: `appointment_${Date.now()}`,
         title: `Hiến máu tại ${selectedPlace.title}`,
         date: appointmentDate
       }
 
-      // Lên lịch thông báo cho cuộc hẹn
-      const notificationIds = await scheduleAppointmentReminder(
+      await scheduleAppointmentReminder(
         appointmentData.id,
         appointmentData.date,
         appointmentData.title
       )
+      // console.log('Đã lên lịch thông báo:', notificationIds)
 
-      console.log('Đã lên lịch thông báo:', notificationIds)
+      const response = await createDonationReqMutation.mutateAsync({
+        date: appointmentDate,
+        placeId: selectedPlace.id,
+        placeTitle: selectedPlace.title
+      })
 
       // Reset form
       setSelectedDate(null)
@@ -165,12 +166,9 @@ const DonationBlood = () => {
       setCurrentYear(currentDate.getFullYear())
       setSelectedPlace(null)
 
-      // Hiển thị thông báo thành công
       alert(
         'Đặt lịch hiến máu thành công! Bạn sẽ nhận được thông báo nhắc nhở trước khi đến hẹn.'
       )
-
-      // Navigate back
       router.push('/(donation-request)/donation-request')
     } catch (error) {
       console.error('Lỗi khi đặt lịch:', error)

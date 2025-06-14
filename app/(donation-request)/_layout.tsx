@@ -102,6 +102,8 @@ function StackNavigator() {
 }
 
 export default function MemberLayout() {
+  const router = useRouter()
+
   return (
     <BookingProvider>
       <QRScannerProvider>
