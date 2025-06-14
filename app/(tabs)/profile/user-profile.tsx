@@ -1,3 +1,4 @@
+import ImageUploader from '@/lib/components/ImageUploader'
 import LoadingOverlay from '@/lib/components/Loading'
 import { useQRScannerContext } from '@/lib/contexts/QRScannerContext'
 import { useUpdateUser } from '@/lib/hooks/api/useUser'
@@ -157,6 +158,7 @@ const EditProfile = () => {
         }
 
         console.log('Gửi dữ liệu thay đổi:', updatePayload)
+        console.log('updatePayload', updatePayload)
 
         await updateUserProfile.mutateAsync(updatePayload)
         alert('Cập nhật thành công!')
@@ -192,7 +194,6 @@ const EditProfile = () => {
         error={errors.fullName}
         isRequired
       />
-
       <FormInput
         label='Email'
         placeholder='example@email.com'
@@ -201,8 +202,7 @@ const EditProfile = () => {
         error={errors.email}
         isRequired
         keyboardType='email-address'
-      />
-
+      />{' '}
       <FormInput
         label='Số điện thoại'
         placeholder='0123456789'
@@ -210,16 +210,14 @@ const EditProfile = () => {
         onChangeText={(text) => handleChange('phoneNumber', text)}
         error={errors.phoneNumber}
         keyboardType='phone-pad'
-      />
-
-      <FormInput
-        label='Link ảnh đại diện'
-        placeholder='https://...'
+      />{' '}
+      <ImageUploader
+        label='Ảnh đại diện'
         value={formData.image}
-        onChangeText={(text) => handleChange('image', text)}
+        onChangeImage={(url) => handleChange('image', url)}
         error={errors.image}
+        placeholder='Chọn ảnh từ camera hoặc thư viện'
       />
-
       {/* Giới tính - Picker */}
       <Text style={{ marginBottom: 4, marginTop: 12 }}>Giới tính</Text>
       <View
@@ -243,7 +241,6 @@ const EditProfile = () => {
       {errors.gender ? (
         <Text style={{ color: 'red', marginBottom: 8 }}>{errors.gender}</Text>
       ) : null}
-
       {/* Ngày sinh - Date Picker */}
       <Text style={{ marginBottom: 4 }}>Ngày sinh</Text>
       <Pressable
@@ -334,7 +331,6 @@ const EditProfile = () => {
           </View>
         </Modal>
       </>
-
       <TouchableOpacity
         onPress={handleSubmit}
         style={{

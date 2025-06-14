@@ -15,9 +15,9 @@ export default {
       bundleIdentifier: 'com.wa2goose.ExpoQR2',
       infoPlist: {
         NSCameraUsageDescription:
-          'Ứng dụng cần quyền truy cập camera để quét mã QR.',
+          'Ứng dụng cần quyền truy cập camera để quét mã QR và chụp ảnh đại diện.',
         NSPhotoLibraryUsageDescription:
-          'Ứng dụng cần quyền truy cập thư viện ảnh để tải lên ảnh.'
+          'Ứng dụng cần quyền truy cập thư viện ảnh để chọn ảnh đại diện và tải lên ảnh.'
       }
     },
     android: {
@@ -51,6 +51,7 @@ export default {
         }
       ],
       'expo-camera',
+      'expo-image-picker',
       [
         'expo-notifications',
         {
