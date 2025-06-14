@@ -22,6 +22,33 @@ class BlogApi {
       throw error;
     }
   }
+  async createBlog(blog: Partial<Blog>) {
+    try {
+      const res = await axiosInstance.post(blogURL, blog);
+      return res.data.data;
+    } catch (error) {
+      console.error("Error creating blog: ", error);
+      throw error;
+    }
+  }
+  async updateBlog(id: string, blog: Partial<Blog>) {
+    try {
+      const res = await axiosInstance.patch(`${blogURL}/${id}`, blog);
+      return res.data.data;
+    } catch (error) {
+      console.error("Error updating blog: ", error);
+      throw error;
+    }
+  }
+  async deleteBlog(id: string) {
+    try {
+      const res = await axiosInstance.delete(`${blogURL}/${id}`);
+      return res.data.data;
+    } catch (error) {
+      console.error("Error deleting blog: ", error);
+      throw error;
+    }
+  }
 }
 
 const blogApi = new BlogApi();
