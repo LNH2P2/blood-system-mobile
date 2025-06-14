@@ -4,7 +4,10 @@ import {
   useDeleteBlog,
   useUpdateBlog,
 } from "@/lib/hooks/api/useBlog";
+import { useCategories, useCategoryById } from "@/lib/hooks/api/useCategory";
 import { Blog } from "@/lib/types/blog";
+import { Category } from "@/lib/types/category";
+import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import React, { useEffect, useState } from "react";
 import {
@@ -36,7 +39,21 @@ export default function BlogDialog({
   const [summary, setSummary] = useState(blog?.summary);
   const [content, setContent] = useState(blog?.content);
   const [image, setImage] = useState(blog?.image);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>(
+    blog?.category ?? ""
+  );
+  const [category, setCategory] = useState<Category | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+
+  const { data: categories } = useCategories();
+
+  const { data: categoryFromServer } = useCategoryById(selectedCategoryId);
+
+  useEffect(() => {
+    if (categoryFromServer) {
+      setCategory(categoryFromServer);
+    }
+  }, [categoryFromServer]);
 
   useEffect(() => {
     if (blog) {
@@ -44,6 +61,7 @@ export default function BlogDialog({
       setSummary(blog.summary);
       setContent(blog.content);
       setImage(blog.image);
+      setSelectedCategoryId(blog.category ?? "");
     }
   }, [blog]);
 
@@ -110,13 +128,30 @@ export default function BlogDialog({
       return;
     }
 
+    if (!selectedCategoryId) {
+      Alert.alert("Error", "Please select a category");
+      return;
+    }
+
     try {
       if (mode === "create") {
-        await createBlog.mutateAsync({ title, summary, content, image });
+        await createBlog.mutateAsync({
+          title,
+          summary,
+          content,
+          image,
+          category: selectedCategoryId,
+        });
       } else if (mode === "update" && blog) {
         await updateBlog.mutateAsync({
           id: blog._id,
-          blog: { title, summary, content, image },
+          blog: {
+            title,
+            summary,
+            content,
+            image,
+            category: selectedCategoryId,
+          },
         });
       } else if (mode === "delete" && blog) {
         console.log("deleting blog: ", blog._id);
@@ -127,6 +162,7 @@ export default function BlogDialog({
       setSummary("");
       setContent("");
       setImage("");
+      setSelectedCategoryId("");
       onClose();
     } catch (error) {
       Alert.alert("Error", "Something went wrong. Please try again.");
@@ -182,6 +218,25 @@ export default function BlogDialog({
                 multiline
                 placeholderTextColor='#666'
               />
+
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={category?._id}
+                  onValueChange={(itemValue) =>
+                    setSelectedCategoryId(itemValue)
+                  }
+                  style={styles.picker}
+                >
+                  <Picker.Item label='Select a category' value='' />
+                  {categories?.map((category) => (
+                    <Picker.Item
+                      key={category._id}
+                      label={category.name}
+                      value={category._id}
+                    />
+                  ))}
+                </Picker>
+              </View>
 
               <View style={styles.imageContainer}>
                 {image ? (
@@ -292,6 +347,16 @@ const styles = StyleSheet.create({
   contentInput: {
     height: 120,
     textAlignVertical: "top",
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    marginBottom: 16,
+    backgroundColor: "#f8f8f8",
+  },
+  picker: {
+    height: 50,
   },
   imageContainer: {
     marginBottom: 16,

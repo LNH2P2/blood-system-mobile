@@ -5,6 +5,7 @@ export interface Blog {
   summary: string;
   content: string;
   status: string;
+  category: string;
   createdAt: string;
   updatedAt: string;
   __v: number;
