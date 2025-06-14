@@ -1,69 +1,39 @@
 import axiosInstance from '@/lib/api/axiosInstance'
-import { DonationRequestResType } from '@/lib/types'
+import {
+  CreateDonationRequestBody,
+  DonationRequestResType,
+  GeListDonationResType
+} from '@/lib/types'
 
 export const URL_DONATION_REQUEST = '/donation-requests'
 
 const donationRequestApi = {
-  create: (data: any = {}): Promise<DonationRequestResType> =>
-    axiosInstance
-      .post(URL_DONATION_REQUEST, data)
-      .then((response) => response.data),
+  // create: (data: any = {}): Promise<DonationRequestResType> =>
+  //   axiosInstance
+  //     .post(URL_DONATION_REQUEST, data)
+  //     .then((response) => response.data),
 
-  getListDonation() {
+  async create(
+    data: CreateDonationRequestBody
+  ): Promise<DonationRequestResType> {
+    try {
+      const res = await axiosInstance.post(URL_DONATION_REQUEST, data)
+      return res.data.data
+    } catch (error) {
+      console.error('Error fetching blogs: ', error)
+      throw error
+    }
+  },
+
+  async getListDonation(): Promise<GeListDonationResType> {
     // return axiosInstance.get(URL_DONATION_REQUEST)
-    return {
-      data: [
-        {
-          id: '1',
-          title: 'Trung tâm Máu Quốc gia - Gan tiểu cầu',
-          date: '02/06/2025'
-        },
-        {
-          id: '2',
-          title: 'Trung tâm Máu Quốc gia - Gan tiểu cầu',
-          date: '02/06/2025'
-        },
-        {
-          id: '3',
-          title: 'Trung tâm Máu Quốc gia - Gan tiểu cầu',
-          date: '02/06/2025'
-        },
-        {
-          id: '4',
-          title: 'Trung tâm Máu Quốc gia - Gan tiểu cầu',
-          date: '02/06/2025'
-        },
-        {
-          id: '5',
-          title: 'Trung tâm Máu Quốc gia - Gan tiểu cầu',
-          date: '02/06/2025'
-        },
-        {
-          id: '6',
-          title: 'Trung tâm Máu Quốc gia - Gan tiểu cầu',
-          date: '02/06/2025'
-        },
-        {
-          id: '7',
-          title: 'Trung tâm Máu Quốc gia - Gan tiểu cầu',
-          date: '02/06/2025'
-        },
-        {
-          id: '8',
-          title: 'Trung tâm Máu Quốc gia - Gan tiểu cầu',
-          date: '02/06/2025'
-        },
-        {
-          id: '9',
-          title: 'Trung tâm Máu Quốc gia - Gan tiểu cầu',
-          date: '02/06/2025'
-        },
-        {
-          id: '10',
-          title: 'Trung tâm Máu Quốc gia - Gan tiểu cầu',
-          date: '02/06/2025'
-        }
-      ]
+    try {
+      const res = await axiosInstance.get(URL_DONATION_REQUEST)
+      // return
+      return res.data
+    } catch (error) {
+      console.error('Error fetching blogs: ', error)
+      throw error
     }
   }
 }

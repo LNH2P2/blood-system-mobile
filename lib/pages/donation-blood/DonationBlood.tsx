@@ -155,10 +155,11 @@ const DonationBlood = () => {
       // console.log('Đã lên lịch thông báo:', notificationIds)
 
       const response = await createDonationReqMutation.mutateAsync({
-        date: appointmentDate,
-        placeId: selectedPlace.id,
-        placeTitle: selectedPlace.title
+        medicalFacilityId: selectedPlace.id,
+        scheduleDate: new Date(appointmentDate),
+        userId: '6848f28cddd4f001f846e347'
       })
+      console.log('response:', response)
 
       // Reset form
       setSelectedDate(null)

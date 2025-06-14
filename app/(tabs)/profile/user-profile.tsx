@@ -157,9 +157,6 @@ const EditProfile = () => {
           return
         }
 
-        console.log('Gửi dữ liệu thay đổi:', updatePayload)
-        console.log('updatePayload', updatePayload)
-
         await updateUserProfile.mutateAsync(updatePayload)
         alert('Cập nhật thành công!')
       } catch (err) {
