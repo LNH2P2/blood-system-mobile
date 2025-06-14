@@ -1,4 +1,5 @@
 import { Blog } from "@/lib/types/blog";
+import { router } from "expo-router";
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -14,27 +15,29 @@ export default function BlogList({
   onDelete,
 }: Readonly<BlogListProps>) {
   return (
-    <View style={styles.container}>
-      <Image source={{ uri: item.image }} style={styles.image} />
-      <View style={styles.content}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.summary}>{item.summary}</Text>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.button, styles.editButton]}
-            onPress={onEdit}
-          >
-            <Text style={styles.buttonText}>Edit</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, styles.deleteButton]}
-            onPress={onDelete}
-          >
-            <Text style={styles.buttonText}>Delete</Text>
-          </TouchableOpacity>
+    <TouchableOpacity onPress={() => router.navigate(`/blog/${item._id}`)}>
+      <View style={styles.container}>
+        <Image source={{ uri: item.image }} style={styles.image} />
+        <View style={styles.content}>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.summary}>{item.summary}</Text>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={[styles.button, styles.editButton]}
+              onPress={onEdit}
+            >
+              <Text style={styles.buttonText}>Edit</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.deleteButton]}
+              onPress={onDelete}
+            >
+              <Text style={styles.buttonText}>Delete</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
