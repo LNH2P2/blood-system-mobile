@@ -6,7 +6,7 @@ import EditRequestModal from '@/lib/components/ui/EditRequestModal'
 import { theme } from '@/lib/theme'
 import { DonationRequest as DonationRequestType } from '@/lib/types'
 import React, { useState } from 'react'
-import { Alert, FlatList, StyleSheet, Text, View } from 'react-native'
+import { FlatList, StyleSheet, Text, View } from 'react-native'
 
 interface DonationRequest {
   id: string
@@ -153,24 +153,6 @@ const ListRequest = ({ donationRequests }: ListRequestProps) => {
       onPress: () => {
         console.log('Edit pressed for:', item.id)
         handleEditPress(item)
-      }
-    },
-    {
-      id: 'view',
-      label: 'Xem chi tiết',
-      icon: 'eye',
-      onPress: () => {
-        console.log('View details for:', item.id)
-        Alert.alert('Chi tiết', `Xem chi tiết: ${item.title}`)
-      }
-    },
-    {
-      id: 'duplicate',
-      label: 'Nhân bản',
-      icon: 'copy',
-      onPress: () => {
-        console.log('Duplicate pressed for:', item.id)
-        Alert.alert('Nhân bản', `Nhân bản yêu cầu: ${item.title}`)
       }
     },
     {

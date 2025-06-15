@@ -1,3 +1,4 @@
+import { theme } from '@/lib/theme'
 import { Feather } from '@expo/vector-icons'
 import React, { useEffect, useState } from 'react'
 import {
@@ -155,6 +156,31 @@ const EditRequestModal: React.FC<EditRequestModalProps> = ({
               <Text style={styles.cancelButtonText}>Hủy</Text>
             </TouchableOpacity>
           </View>
+
+          <Text
+            style={{
+              textAlign: 'center',
+              color: '#9ca3af',
+              fontSize: 16,
+              marginTop: 12
+            }}
+          >
+            Thay đổi sẽ được lưu ngay sau khi xác nhận.
+          </Text>
+
+          <Text
+            style={{
+              textAlign: 'center',
+              marginTop: 20,
+              fontSize: 16,
+              color: '#555'
+            }}
+          >
+            Cần hỗ trợ?{' '}
+            <Text style={{ color: theme.color.primary }}>
+              Liên hệ trung tâm
+            </Text>
+          </Text>
         </View>
       </View>
     </Modal>
@@ -177,7 +203,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 24,
-    minHeight: 300,
+    minHeight: 'auto',
     height: '80%',
     shadowColor: '#000',
     shadowOffset: {
@@ -266,7 +292,7 @@ const styles = StyleSheet.create({
     gap: 12
   },
   saveButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: theme.color.primary,
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 16,
