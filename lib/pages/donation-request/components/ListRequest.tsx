@@ -1,14 +1,10 @@
+import DropdownMenu, {
+  DropdownMenuItem
+} from '@/lib/components/ui/DropdownMenu'
 import { theme } from '@/lib/theme'
 import { DonationRequest as DonationRequestType } from '@/lib/types'
-import { Feather } from '@expo/vector-icons'
 import React from 'react'
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native'
+import { Alert, FlatList, StyleSheet, Text, View } from 'react-native'
 
 interface DonationRequest {
   id: string
@@ -71,6 +67,57 @@ const mockData: DonationRequest[] = [
 const ListRequest = ({ donationRequests }: ListRequestProps) => {
   console.log('Donation Requests:', donationRequests)
 
+  const getMenuItems = (item: DonationRequest): DropdownMenuItem[] => [
+    {
+      id: 'edit',
+      label: 'Chỉnh sửa',
+      icon: 'edit-2',
+      onPress: () => {
+        console.log('Edit pressed for:', item.id)
+        Alert.alert('Chỉnh sửa', `Chỉnh sửa yêu cầu: ${item.title}`)
+      }
+    },
+    {
+      id: 'view',
+      label: 'Xem chi tiết',
+      icon: 'eye',
+      onPress: () => {
+        console.log('View details for:', item.id)
+        Alert.alert('Chi tiết', `Xem chi tiết: ${item.title}`)
+      }
+    },
+    {
+      id: 'duplicate',
+      label: 'Nhân bản',
+      icon: 'copy',
+      onPress: () => {
+        console.log('Duplicate pressed for:', item.id)
+        Alert.alert('Nhân bản', `Nhân bản yêu cầu: ${item.title}`)
+      }
+    },
+    {
+      id: 'delete',
+      label: 'Xóa',
+      icon: 'trash-2',
+      destructive: true,
+      onPress: () => {
+        console.log('Delete pressed for:', item.id)
+        Alert.alert(
+          'Xác nhận xóa',
+          `Bạn có chắc chắn muốn xóa yêu cầu: ${item.title}?`,
+          [
+            { text: 'Hủy', style: 'cancel' },
+            {
+              text: 'Xóa',
+              style: 'destructive',
+              onPress: () => console.log('Deleted')
+            }
+          ]
+        )
+      }
+    }
+  ]
+
   const renderItem = ({ item }: { item: DonationRequest }) => (
     <View style={styles.requestItem}>
       <View style={styles.dateIndicator} />
@@ -79,19 +126,17 @@ const ListRequest = ({ donationRequests }: ListRequestProps) => {
           <View style={styles.calendarIcon}>
             <Text style={styles.calendarText}>📅</Text>
           </View>
-        </View>{' '}
+        </View>
         <View style={styles.textContainer}>
           <Text style={styles.title} numberOfLines={2} ellipsizeMode='tail'>
             {item.title}
           </Text>
           <View style={styles.bottomRow}>
-            <Text style={styles.date}>{item.date}</Text>{' '}
-            <TouchableOpacity
-              style={styles.moreButton}
-              onPress={() => console.log('Edit pressed for:', item.id)}
-            >
-              <Feather name='more-vertical' size={18} color='#666' />
-            </TouchableOpacity>
+            <Text style={styles.date}>{item.date}</Text>
+            <DropdownMenu
+              items={getMenuItems(item)}
+              buttonStyle={styles.moreButton}
+            />
           </View>
         </View>
       </View>
