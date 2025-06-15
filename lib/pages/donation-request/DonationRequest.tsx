@@ -20,6 +20,9 @@ export default function DonationRequestForm() {
   const { scheduleAppointmentReminder, sendTestNotification } =
     useNotifications()
 
+  const { data: donationRequests } = useGetListDonationReqQuery()
+  console.log('Donation Requests:', donationRequests)
+
   const handleAppointmentCreated = async (appointmentData: {
     id: string
     title: string

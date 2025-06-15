@@ -1,4 +1,5 @@
 import { theme } from '@/lib/theme'
+import { DonationRequest as DonationRequestType } from '@/lib/types'
 import React from 'react'
 import { FlatList, StyleSheet, Text, View } from 'react-native'
 
@@ -6,6 +7,10 @@ interface DonationRequest {
   id: string
   title: string
   date: string
+}
+
+interface ListRequestProps {
+  donationRequests?: DonationRequestType[]
 }
 
 const mockData: DonationRequest[] = [
@@ -56,7 +61,8 @@ const mockData: DonationRequest[] = [
   }
 ]
 
-const ListRequest = () => {
+const ListRequest = ({ donationRequests }: ListRequestProps) => {
+  console.log('Donation Requests:', donationRequests)
   const renderItem = ({ item }: { item: DonationRequest }) => (
     <View style={styles.requestItem}>
       <View style={styles.dateIndicator} />
