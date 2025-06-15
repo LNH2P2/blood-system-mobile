@@ -51,7 +51,6 @@ const DonationBlood = () => {
   const getFirstDayOfMonth = (month: number, year: number) => {
     return new Date(year, month, 1).getDay()
   }
-
   const navigateMonth = (direction: 'prev' | 'next') => {
     if (direction === 'prev') {
       if (currentMonth === 0) {
@@ -66,6 +65,37 @@ const DonationBlood = () => {
         setCurrentYear(currentYear + 1)
       } else {
         setCurrentMonth(currentMonth + 1)
+      }
+    }
+
+    // Clear selected date if it becomes a past date after navigation
+    if (selectedDate) {
+      const newMonth =
+        direction === 'prev'
+          ? currentMonth === 0
+            ? 11
+            : currentMonth - 1
+          : currentMonth === 11
+          ? 0
+          : currentMonth + 1
+      const newYear =
+        direction === 'prev'
+          ? currentMonth === 0
+            ? currentYear - 1
+            : currentYear
+          : currentMonth === 11
+          ? currentYear + 1
+          : currentYear
+
+      const selectedDateObj = new Date(newYear, newMonth, selectedDate)
+      const currentDateOnly = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        currentDate.getDate()
+      )
+
+      if (selectedDateObj < currentDateOnly) {
+        setSelectedDate(null)
       }
     }
   }
@@ -88,10 +118,18 @@ const DonationBlood = () => {
         </View>
       )
     }
-
     for (let day = 1; day <= daysInMonth; day++) {
       const isSelected = selectedDate === day
       const isToday = isCurrentMonth && today === day
+
+      // Check if the day is in the past
+      const dayDate = new Date(currentYear, currentMonth, day)
+      const currentDateOnly = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        currentDate.getDate()
+      )
+      const isPastDay = dayDate < currentDateOnly
 
       days.push(
         <View key={day} style={styles.dayContainer}>
@@ -99,18 +137,23 @@ const DonationBlood = () => {
             style={[
               styles.dayButton,
               isSelected && styles.selectedDay,
-              isToday && !isSelected && styles.todayDay
+              isToday && !isSelected && styles.todayDay,
+              isPastDay && styles.pastDay
             ]}
             onPress={() => {
-              setSelectedDate(day)
-              router.push('/(donation-request)/donation-place')
+              if (!isPastDay) {
+                setSelectedDate(day)
+                router.push('/(donation-request)/donation-place')
+              }
             }}
+            disabled={isPastDay}
           >
             <Text
               style={[
                 styles.dayText,
                 isSelected && styles.selectedDayText,
-                isToday && !isSelected && styles.todayDayText
+                isToday && !isSelected && styles.todayDayText,
+                isPastDay && styles.pastDayText
               ]}
             >
               {day}
@@ -122,11 +165,26 @@ const DonationBlood = () => {
 
     return days
   }
-
   const handleBookingSubmit = async () => {
     if (createDonationReqMutation.isPending) return
     if (!selectedDate || !selectedPlace) {
       alert('Vui lòng chọn ngày và địa điểm')
+      return
+    }
+
+    // Validate selected date is not in the past
+    const selectedDateObj = new Date(currentYear, currentMonth, selectedDate)
+    const currentDateOnly = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate()
+    )
+
+    if (selectedDateObj < currentDateOnly) {
+      alert(
+        'Không thể đặt lịch cho ngày trong quá khứ. Vui lòng chọn ngày khác.'
+      )
+      setSelectedDate(null) // Reset selected date
       return
     }
 
@@ -369,6 +427,10 @@ const styles = StyleSheet.create({
   todayDay: {
     backgroundColor: '#f0f0f0'
   },
+  pastDay: {
+    backgroundColor: '#f5f5f5',
+    opacity: 0.5
+  },
   emptyDay: {
     flex: 1
   },
@@ -384,6 +446,10 @@ const styles = StyleSheet.create({
   todayDayText: {
     color: theme.color.primary,
     fontWeight: 'bold'
+  },
+  pastDayText: {
+    color: '#bbb',
+    fontWeight: '400'
   },
   locationSection: {
     margin: 16,

@@ -138,7 +138,6 @@ const ListRequest = ({ donationRequests }: ListRequestProps) => {
   const handleEditSave = (updatedRequest: DonationRequest) => {
     console.log('Updated request:', updatedRequest)
     // Add your save logic here
-    // For example: updateDonationRequest(updatedRequest)
     setEditModal({ visible: false, item: null })
   }
 
@@ -199,7 +198,7 @@ const ListRequest = ({ donationRequests }: ListRequestProps) => {
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContainer}
-      />{' '}
+      />
       <ConfirmationModal
         isVisible={deleteModal.visible}
         title='Xác nhận xóa'
