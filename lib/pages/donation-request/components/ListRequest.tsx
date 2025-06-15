@@ -1,9 +1,10 @@
+import ConfirmationModal from '@/lib/components/ui/ConfirmationModal'
 import DropdownMenu, {
   DropdownMenuItem
 } from '@/lib/components/ui/DropdownMenu'
 import { theme } from '@/lib/theme'
 import { DonationRequest as DonationRequestType } from '@/lib/types'
-import React from 'react'
+import React, { useState } from 'react'
 import { Alert, FlatList, StyleSheet, Text, View } from 'react-native'
 
 interface DonationRequest {
@@ -67,6 +68,30 @@ const mockData: DonationRequest[] = [
 const ListRequest = ({ donationRequests }: ListRequestProps) => {
   console.log('Donation Requests:', donationRequests)
 
+  const [deleteModal, setDeleteModal] = useState({
+    visible: false,
+    item: null as DonationRequest | null
+  })
+
+  const handleDeletePress = (item: DonationRequest) => {
+    setDeleteModal({
+      visible: true,
+      item: item
+    })
+  }
+
+  const handleDeleteConfirm = () => {
+    if (deleteModal.item) {
+      console.log('Deleted:', deleteModal.item.id)
+      // Add your delete logic here
+    }
+    setDeleteModal({ visible: false, item: null })
+  }
+
+  const handleDeleteCancel = () => {
+    setDeleteModal({ visible: false, item: null })
+  }
+
   const getMenuItems = (item: DonationRequest): DropdownMenuItem[] => [
     {
       id: 'edit',
@@ -78,42 +103,13 @@ const ListRequest = ({ donationRequests }: ListRequestProps) => {
       }
     },
     {
-      id: 'view',
-      label: 'Xem chi tiết',
-      icon: 'eye',
-      onPress: () => {
-        console.log('View details for:', item.id)
-        Alert.alert('Chi tiết', `Xem chi tiết: ${item.title}`)
-      }
-    },
-    {
-      id: 'duplicate',
-      label: 'Nhân bản',
-      icon: 'copy',
-      onPress: () => {
-        console.log('Duplicate pressed for:', item.id)
-        Alert.alert('Nhân bản', `Nhân bản yêu cầu: ${item.title}`)
-      }
-    },
-    {
       id: 'delete',
       label: 'Xóa',
       icon: 'trash-2',
       destructive: true,
       onPress: () => {
         console.log('Delete pressed for:', item.id)
-        Alert.alert(
-          'Xác nhận xóa',
-          `Bạn có chắc chắn muốn xóa yêu cầu: ${item.title}?`,
-          [
-            { text: 'Hủy', style: 'cancel' },
-            {
-              text: 'Xóa',
-              style: 'destructive',
-              onPress: () => console.log('Deleted')
-            }
-          ]
-        )
+        handleDeletePress(item)
       }
     }
   ]
@@ -142,7 +138,6 @@ const ListRequest = ({ donationRequests }: ListRequestProps) => {
       </View>
     </View>
   )
-
   return (
     <View style={styles.container}>
       <FlatList
@@ -151,6 +146,17 @@ const ListRequest = ({ donationRequests }: ListRequestProps) => {
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContainer}
+      />
+
+      <ConfirmationModal
+        isVisible={deleteModal.visible}
+        title='Xác nhận xóa'
+        message={`Bạn có chắc chắn muốn xóa yêu cầu: "${deleteModal.item?.title}"?`}
+        confirmText='Xóa'
+        cancelText='Hủy'
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+        destructive={true}
       />
     </View>
   )
