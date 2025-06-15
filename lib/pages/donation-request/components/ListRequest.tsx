@@ -1,7 +1,14 @@
 import { theme } from '@/lib/theme'
 import { DonationRequest as DonationRequestType } from '@/lib/types'
+import { Feather } from '@expo/vector-icons'
 import React from 'react'
-import { FlatList, StyleSheet, Text, View } from 'react-native'
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native'
 
 interface DonationRequest {
   id: string
@@ -63,6 +70,7 @@ const mockData: DonationRequest[] = [
 
 const ListRequest = ({ donationRequests }: ListRequestProps) => {
   console.log('Donation Requests:', donationRequests)
+
   const renderItem = ({ item }: { item: DonationRequest }) => (
     <View style={styles.requestItem}>
       <View style={styles.dateIndicator} />
@@ -71,12 +79,20 @@ const ListRequest = ({ donationRequests }: ListRequestProps) => {
           <View style={styles.calendarIcon}>
             <Text style={styles.calendarText}>📅</Text>
           </View>
-        </View>
+        </View>{' '}
         <View style={styles.textContainer}>
-          <Text style={styles.title} numberOfLines={3}>
+          <Text style={styles.title} numberOfLines={2} ellipsizeMode='tail'>
             {item.title}
           </Text>
-          <Text style={styles.date}>{item.date}</Text>
+          <View style={styles.bottomRow}>
+            <Text style={styles.date}>{item.date}</Text>{' '}
+            <TouchableOpacity
+              style={styles.moreButton}
+              onPress={() => console.log('Edit pressed for:', item.id)}
+            >
+              <Feather name='more-vertical' size={18} color='#666' />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </View>
@@ -119,6 +135,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 16,
     flexDirection: 'row',
+    height: 110, // Fixed height instead of minHeight
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -143,19 +160,37 @@ const styles = StyleSheet.create({
     fontSize: 18
   },
   textContainer: {
-    flex: 1
+    flex: 1,
+    justifyContent: 'space-between',
+    height: '100%' // Ensure full height usage
   },
   title: {
     fontSize: 16,
     fontWeight: '600',
     color: '#333',
-    lineHeight: 22,
-    marginBottom: 8
+    lineHeight: 20,
+    marginBottom: 8,
+    flex: 1,
+    maxHeight: 40
+  },
+  bottomRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: 32 // Fixed height for bottom row
   },
   date: {
     fontSize: 14,
     color: '#666',
-    fontWeight: '400'
+    fontWeight: '400',
+    flex: 1
+  },
+  moreButton: {
+    padding: 6,
+    borderRadius: 6,
+    backgroundColor: '#f8f9fa',
+    borderWidth: 1,
+    borderColor: '#e9ecef'
   }
 })
 
