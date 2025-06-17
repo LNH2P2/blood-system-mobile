@@ -16,13 +16,10 @@ import { useRouter } from 'expo-router'
 export default function DonationRequestForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
-  const { data } = useGetListDonationReqQuery()
   const { scheduleAppointmentReminder, sendTestNotification } =
     useNotifications()
 
   const { data: donationRequests } = useGetListDonationReqQuery()
-  console.log('Donation Requests:', donationRequests)
-
   const handleAppointmentCreated = async (appointmentData: {
     id: string
     title: string
@@ -48,7 +45,7 @@ export default function DonationRequestForm() {
 
   return (
     <>
-      <ListRequest />
+      <ListRequest donationRequests={donationRequests?.data} />
 
       <View style={styles.buttonContainer}>
         <SubmitButton

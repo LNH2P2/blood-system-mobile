@@ -3,124 +3,38 @@ import DropdownMenu, {
   DropdownMenuItem
 } from '@/lib/components/ui/DropdownMenu'
 import EditRequestModal from '@/lib/components/ui/EditRequestModal'
+import { useDeleteDonationReqMutation } from '@/lib/hooks/api/useDonationRequest'
 import { theme } from '@/lib/theme'
-import { DonationRequest as DonationRequestType } from '@/lib/types'
+import { DonationRequestItem } from '@/lib/types'
 import React, { useState } from 'react'
 import { FlatList, StyleSheet, Text, View } from 'react-native'
 
-interface DonationRequest {
-  id: string
-  title: string
-  date: string
-  description?: string
-  location?: string
-  time?: string
-}
-
 interface ListRequestProps {
-  donationRequests?: DonationRequestType[]
+  donationRequests?: DonationRequestItem[]
 }
-
-const mockData: DonationRequest[] = [
-  {
-    id: '1',
-    title: 'Công ty TNHH MTV Trắc Địa Bản đồ - Cục Bản đồ - Bộ Tổng tham mưu',
-    date: '10/06/2025',
-    description:
-      'Tổ chức hiến máu tình nguyện cho cán bộ nhân viên và người dân khu vực',
-    location: 'Tầng 1, Tòa nhà Trắc địa, 156 Lý Thường Kiệt, Hoàn Kiếm, Hà Nội',
-    time: '08:00 - 16:00'
-  },
-  {
-    id: '2',
-    title: 'Trường ĐH Ngoại thương',
-    date: '03/06/2025',
-    description: 'Chương trình hiến máu sinh viên "Giọt hồng yêu thương"',
-    location:
-      'Hội trường A, Trường ĐH Ngoại thương, 91 Chùa Láng, Đống Đa, Hà Nội',
-    time: '09:00 - 15:00'
-  },
-  {
-    id: '4',
-    title: 'Trung tâm Máu Quốc gia - Gan tiểu cầu',
-    date: '02/06/2025',
-    description: 'Thu nhận máu chuyên biệt cho bệnh nhân cần truyền tiểu cầu',
-    location: 'Trung tâm Máu Quốc gia, 26 Trần Thủ Độ, Hoàng Mai, Hà Nội',
-    time: '07:30 - 11:30'
-  },
-  {
-    id: '5',
-    title: 'Trung tâm Máu Quốc gia - Gan tiểu cầu',
-    date: '02/06/2025',
-    description: 'Thu nhận máu chuyên biệt',
-    location: 'Trung tâm Máu Quốc gia',
-    time: '07:30 - 11:30'
-  },
-  {
-    id: '6',
-    title: 'Trung tâm Máu Quốc gia - Gan tiểu cầu',
-    date: '02/06/2025',
-    description: 'Thu nhận máu chuyên biệt',
-    location: 'Trung tâm Máu Quốc gia',
-    time: '07:30 - 11:30'
-  },
-  {
-    id: '7',
-    title: 'Trung tâm Máu Quốc gia - Gan tiểu cầu',
-    date: '02/06/2025',
-    description: 'Thu nhận máu chuyên biệt',
-    location: 'Trung tâm Máu Quốc gia',
-    time: '07:30 - 11:30'
-  },
-  {
-    id: '8',
-    title: 'Trung tâm Máu Quốc gia - Gan tiểu cầu',
-    date: '02/06/2025',
-    description: 'Thu nhận máu chuyên biệt',
-    location: 'Trung tâm Máu Quốc gia',
-    time: '07:30 - 11:30'
-  },
-  {
-    id: '9',
-    title: 'Trung tâm Máu Quốc gia - Gan tiểu cầu',
-    date: '02/06/2025',
-    description: 'Thu nhận máu chuyên biệt',
-    location: 'Trung tâm Máu Quốc gia',
-    time: '07:30 - 11:30'
-  },
-  {
-    id: '10',
-    title: 'Trung tâm Máu Quốc gia - Gan tiểu cầu',
-    date: '02/06/2025',
-    description: 'Thu nhận máu chuyên biệt',
-    location: 'Trung tâm Máu Quốc gia',
-    time: '07:30 - 11:30'
-  }
-]
 
 const ListRequest = ({ donationRequests }: ListRequestProps) => {
-  console.log('Donation Requests:', donationRequests)
   const [deleteModal, setDeleteModal] = useState({
     visible: false,
-    item: null as DonationRequest | null
+    item: null as DonationRequestItem | null
   })
+  const { mutateAsync } = useDeleteDonationReqMutation()
 
   const [editModal, setEditModal] = useState({
     visible: false,
-    item: null as DonationRequest | null
+    item: null as DonationRequestItem | null
   })
 
-  const handleDeletePress = (item: DonationRequest) => {
+  const handleDeletePress = (item: DonationRequestItem) => {
     setDeleteModal({
       visible: true,
       item: item
     })
   }
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (deleteModal.item) {
-      console.log('Deleted:', deleteModal.item.id)
-      // Add your delete logic here
+      await mutateAsync(deleteModal.item._id)
     }
     setDeleteModal({ visible: false, item: null })
   }
@@ -128,14 +42,14 @@ const ListRequest = ({ donationRequests }: ListRequestProps) => {
     setDeleteModal({ visible: false, item: null })
   }
 
-  const handleEditPress = (item: DonationRequest) => {
+  const handleEditPress = (item: DonationRequestItem) => {
     setEditModal({
       visible: true,
       item: item
     })
   }
 
-  const handleEditSave = (updatedRequest: DonationRequest) => {
+  const handleEditSave = (updatedRequest: DonationRequestItem) => {
     console.log('Updated request:', updatedRequest)
     // Add your save logic here
     setEditModal({ visible: false, item: null })
@@ -144,13 +58,13 @@ const ListRequest = ({ donationRequests }: ListRequestProps) => {
   const handleEditCancel = () => {
     setEditModal({ visible: false, item: null })
   }
-  const getMenuItems = (item: DonationRequest): DropdownMenuItem[] => [
+  const getMenuItems = (item: DonationRequestItem): DropdownMenuItem[] => [
     {
       id: 'edit',
       label: 'Chỉnh sửa',
       icon: 'edit-2',
       onPress: () => {
-        console.log('Edit pressed for:', item.id)
+        console.log('Edit pressed for:', item._id)
         handleEditPress(item)
       }
     },
@@ -160,13 +74,13 @@ const ListRequest = ({ donationRequests }: ListRequestProps) => {
       icon: 'trash-2',
       destructive: true,
       onPress: () => {
-        console.log('Delete pressed for:', item.id)
+        console.log('Delete pressed for:', item._id)
         handleDeletePress(item)
       }
     }
   ]
 
-  const renderItem = ({ item }: { item: DonationRequest }) => (
+  const renderItem = ({ item }: { item: DonationRequestItem }) => (
     <View style={styles.requestItem}>
       <View style={styles.dateIndicator} />
       <View style={styles.contentContainer}>
@@ -177,10 +91,10 @@ const ListRequest = ({ donationRequests }: ListRequestProps) => {
         </View>
         <View style={styles.textContainer}>
           <Text style={styles.title} numberOfLines={2} ellipsizeMode='tail'>
-            {item.title}
+            {item.hospitalId.name}
           </Text>
           <View style={styles.bottomRow}>
-            <Text style={styles.date}>{item.date}</Text>
+            <Text style={styles.date}>{item.scheduleDate}</Text>
             <DropdownMenu
               items={getMenuItems(item)}
               buttonStyle={styles.moreButton}
@@ -193,16 +107,16 @@ const ListRequest = ({ donationRequests }: ListRequestProps) => {
   return (
     <View style={styles.container}>
       <FlatList
-        data={mockData}
+        data={donationRequests}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContainer}
       />
       <ConfirmationModal
         isVisible={deleteModal.visible}
         title='Xác nhận xóa'
-        message={`Bạn có chắc chắn muốn xóa yêu cầu: "${deleteModal.item?.title}"?`}
+        message={`Bạn có chắc chắn muốn xóa yêu cầu: "${deleteModal.item?.hospitalId.name}"?`}
         confirmText='Xóa'
         cancelText='Hủy'
         onConfirm={handleDeleteConfirm}

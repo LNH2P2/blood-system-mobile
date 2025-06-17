@@ -1,4 +1,5 @@
 import { theme } from '@/lib/theme'
+import { DonationRequestItem } from '@/lib/types'
 import { Feather } from '@expo/vector-icons'
 import React, { useEffect, useState } from 'react'
 import {
@@ -23,8 +24,8 @@ interface DonationRequest {
 
 interface EditRequestModalProps {
   isVisible: boolean
-  request: DonationRequest | null
-  onSave: (updatedRequest: DonationRequest) => void
+  request: DonationRequestItem | null
+  onSave: (updatedRequest: DonationRequestItem) => void
   onCancel: () => void
 }
 
@@ -44,18 +45,21 @@ const EditRequestModal: React.FC<EditRequestModalProps> = ({
   useEffect(() => {
     if (request) {
       setFormData({
-        date: request.date || '',
-        location: request.location || ''
+        date: request.scheduleDate || '',
+        location: request.hospitalId.address || ''
       })
     }
   }, [request])
 
   const handleSave = () => {
     if (request) {
-      const updatedRequest: DonationRequest = {
+      const updatedRequest: DonationRequestItem = {
         ...request,
-        date: formData.date,
-        location: formData.location
+        scheduleDate: formData.date,
+        hospitalId: {
+          ...request.hospitalId,
+          address: formData.location
+        }
       }
       onSave(updatedRequest)
     }

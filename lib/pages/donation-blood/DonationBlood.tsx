@@ -213,8 +213,8 @@ const DonationBlood = () => {
       // console.log('Đã lên lịch thông báo:', notificationIds)
 
       const response = await createDonationReqMutation.mutateAsync({
-        medicalFacilityId: selectedPlace.id,
-        scheduleDate: new Date(appointmentDate),
+        hospitalId: selectedPlace.id,
+        scheduleDate: appointmentDate.toISOString(),
         userId: '6848f28cddd4f001f846e347'
       })
       console.log('response:', response)
