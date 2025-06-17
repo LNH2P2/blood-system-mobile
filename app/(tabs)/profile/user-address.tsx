@@ -4,6 +4,7 @@ import {
   useDeleteAddress,
   useUpdateAddress,
 } from "@/lib/hooks/api/useAddress";
+import getCurrentAddress from "@/lib/hooks/useGetloaction";
 
 import { theme } from "@/lib/theme";
 import { UserCUAddress } from "@/lib/types/user";
@@ -69,24 +70,49 @@ export default function UserAddressPage() {
     }
   }, [userAddress]);
 
-  const openModal = (index: number | null) => {
-    if (index !== null) {
-      setFormData(addressList[index]);
-      setMode("edit");
-    } else {
-      setFormData((prev) => ({
-        street: "",
-        district: "",
-        city: "",
-        nation: "",
-        userId: prev.userId, // giữ lại userId
-      }));
-      setMode("create");
-    }
-    setEditingIndex(index); // có thể giữ nếu cần dùng key
+  // const openModal = (index: number | null) => {
+  //   if (index !== null) {
+  //     setFormData(addressList[index]);
+  //     setMode("edit");
+  //   } else {
+  //     setFormData((prev) => ({
+  //       street: "",
+  //       district: "",
+  //       city: "",
+  //       nation: "",
+  //       userId: prev.userId, // giữ lại userId
+  //     }));
+  //     setMode("create");
+  //   }
+  //   setEditingIndex(index); // có thể giữ nếu cần dùng key
+  //   setErrors({});
+  //   setModalVisible(true);
+  // };
+
+  const openModal = async (index: number | null) => {
+  if (index !== null) {
+    // Chế độ chỉnh sửa
+    setFormData(addressList[index]);
+    setMode("edit");
+  } else {
+    // Chế độ thêm mới với định vị
+    setMode("create");
     setErrors({});
-    setModalVisible(true);
-  };
+    setIsLoading(true);
+    const currentAddress = await getCurrentAddress();
+    setFormData({
+      userId: userId || "",
+      street: currentAddress?.street || "",
+      district: currentAddress?.district || "",
+      city: currentAddress?.city || "",
+      nation: currentAddress?.nation || "",
+    });
+    setIsLoading(false);
+  }
+  setEditingIndex(index);
+  setModalVisible(true);
+};
+
 
   const validate = (data: UserAddress) => {
     const newErrors: typeof errors = {};
