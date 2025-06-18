@@ -54,7 +54,7 @@ export default function DonationRequestForm() {
         />
 
         {/* Nút test notification */}
-        {/* <TouchableOpacity
+        <TouchableOpacity
           style={[
             styles.submitButton,
             { backgroundColor: '#6366f1', marginTop: 10 }
@@ -62,7 +62,7 @@ export default function DonationRequestForm() {
           onPress={sendTestNotification}
         >
           <Text style={styles.submitButtonText}>Test Thông báo</Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
       </View>
 
       <View style={styles.bottomSpacing} />

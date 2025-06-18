@@ -31,7 +31,10 @@ const donationRequestApi = {
     }
   },
 
-  async updateDonationRequest(id: string, data: UpdateDonationBody) {
+  async updateDonationRequest(
+    id: string,
+    data: UpdateDonationBody
+  ): Promise<CreateDonationResType> {
     try {
       const res = await axiosInstance.patch(
         `${URL_DONATION_REQUEST}/${id}`,

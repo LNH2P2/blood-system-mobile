@@ -15,12 +15,14 @@ export const useGetListDonationReqQuery = () => {
   })
 }
 
-export const useUpdateDonationReqMutation = (
-  id: string,
-  data: UpdateDonationBody
-) => {
+export const useUpdateDonationReqMutation = () => {
+  const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: () => donationRequestApi.updateDonationRequest(id, data)
+    mutationFn: ({ id, data }: { id: string; data: UpdateDonationBody }) =>
+      donationRequestApi.updateDonationRequest(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['donation-requests'] })
+    }
   })
 }
 

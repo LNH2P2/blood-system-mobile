@@ -3,9 +3,13 @@ import DropdownMenu, {
   DropdownMenuItem
 } from '@/lib/components/ui/DropdownMenu'
 import EditRequestModal from '@/lib/components/ui/EditRequestModal'
-import { useDeleteDonationReqMutation } from '@/lib/hooks/api/useDonationRequest'
+import {
+  useDeleteDonationReqMutation,
+  useUpdateDonationReqMutation
+} from '@/lib/hooks/api/useDonationRequest'
 import { theme } from '@/lib/theme'
 import { DonationRequestItem } from '@/lib/types'
+import { formatDateVN } from '@/lib/utils/dateFormat'
 import React, { useState } from 'react'
 import { FlatList, StyleSheet, Text, View } from 'react-native'
 
@@ -18,12 +22,12 @@ const ListRequest = ({ donationRequests }: ListRequestProps) => {
     visible: false,
     item: null as DonationRequestItem | null
   })
-  const { mutateAsync } = useDeleteDonationReqMutation()
-
   const [editModal, setEditModal] = useState({
     visible: false,
     item: null as DonationRequestItem | null
   })
+  const { mutateAsync } = useDeleteDonationReqMutation()
+  const { mutateAsync: updateMutateAsync } = useUpdateDonationReqMutation()
 
   const handleDeletePress = (item: DonationRequestItem) => {
     setDeleteModal({
@@ -51,7 +55,14 @@ const ListRequest = ({ donationRequests }: ListRequestProps) => {
 
   const handleEditSave = (updatedRequest: DonationRequestItem) => {
     console.log('Updated request:', updatedRequest)
-    // Add your save logic here
+    updateMutateAsync({
+      id: updatedRequest._id,
+      data: {
+        scheduleDate: updatedRequest.scheduleDate,
+        hospitalId: updatedRequest.hospitalId._id
+      }
+    })
+
     setEditModal({ visible: false, item: null })
   }
 
@@ -88,13 +99,13 @@ const ListRequest = ({ donationRequests }: ListRequestProps) => {
           <View style={styles.calendarIcon}>
             <Text style={styles.calendarText}>📅</Text>
           </View>
-        </View>
+        </View>{' '}
         <View style={styles.textContainer}>
           <Text style={styles.title} numberOfLines={2} ellipsizeMode='tail'>
             {item.hospitalId.name}
           </Text>
           <View style={styles.bottomRow}>
-            <Text style={styles.date}>{item.scheduleDate}</Text>
+            <Text style={styles.date}>{formatDateVN(item.scheduleDate)}</Text>
             <DropdownMenu
               items={getMenuItems(item)}
               buttonStyle={styles.moreButton}
@@ -204,8 +215,9 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 14,
     color: '#666',
-    fontWeight: '400',
-    flex: 1
+    fontWeight: '500',
+    flex: 1,
+    letterSpacing: 0.2
   },
   moreButton: {
     padding: 6,
