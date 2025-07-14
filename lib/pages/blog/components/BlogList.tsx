@@ -21,20 +21,26 @@ export default function BlogList({
         <View style={styles.content}>
           <Text style={styles.title}>{item.title}</Text>
           <Text style={styles.summary}>{item.summary}</Text>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[styles.button, styles.editButton]}
-              onPress={onEdit}
-            >
-              <Text style={styles.buttonText}>Edit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, styles.deleteButton]}
-              onPress={onDelete}
-            >
-              <Text style={styles.buttonText}>Delete</Text>
-            </TouchableOpacity>
-          </View>
+          {(onEdit || onDelete) && (
+            <View style={styles.buttonContainer}>
+              {onEdit && (
+                <TouchableOpacity
+                  style={[styles.button, styles.editButton]}
+                  onPress={onEdit}
+                >
+                  <Text style={styles.buttonText}>Edit</Text>
+                </TouchableOpacity>
+              )}
+              {onDelete && (
+                <TouchableOpacity
+                  style={[styles.button, styles.deleteButton]}
+                  onPress={onDelete}
+                >
+                  <Text style={styles.buttonText}>Delete</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
         </View>
       </View>
     </TouchableOpacity>

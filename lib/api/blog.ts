@@ -7,7 +7,7 @@ class BlogApi {
   async getBlogs(): Promise<Blog[]> {
     try {
       const res = await axiosInstance.get(blogURL);
-      return res.data.data;
+      return res.data.data.data;
     } catch (error) {
       console.error("Error fetching blogs: ", error);
       throw error;
