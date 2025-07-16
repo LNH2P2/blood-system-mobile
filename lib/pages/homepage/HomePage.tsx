@@ -12,7 +12,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BlogList from "../blog/components/BlogList";
@@ -34,7 +34,7 @@ export default function HomePage() {
     { type: "A+", compatibility: "Can donate to A+, AB+" },
     { type: "O-", compatibility: "Universal donor" },
     { type: "AB+", compatibility: "Universal recipient" },
-    { type: "B-", compatibility: "Can donate to B-, B+, AB-, AB+" },
+    { type: "B-", compatibility: "Can donate to B-, B+, AB-, AB+" }
   ];
 
   const quickActions = [
@@ -44,7 +44,7 @@ export default function HomePage() {
       subtitle: "Register to donate",
       icon: "heart",
       color: "#FF6B6B",
-      onPress: () => router.navigate("/(donation-request)/donation-request"),
+      onPress: () => router.navigate("/(donation-request)/donation-request")
     },
     {
       id: "2",
@@ -52,7 +52,7 @@ export default function HomePage() {
       subtitle: "Search nearby donors",
       icon: "search",
       color: "#4ECDC4",
-      onPress: () => router.navigate("/(donation-request)/donation-place"),
+      onPress: () => router.navigate("/(donation-request)/donation-place")
     },
     {
       id: "3",
@@ -60,7 +60,7 @@ export default function HomePage() {
       subtitle: "Check availability",
       icon: "medical",
       color: "#45B7D1",
-      onPress: () => router.navigate("/(donation-request)/donation-blood"),
+      onPress: () => router.navigate("/(donation-request)/donation-blood")
     },
     {
       id: "4",
@@ -68,15 +68,15 @@ export default function HomePage() {
       subtitle: "Urgent blood needed",
       icon: "alert-circle",
       color: "#FF9F43",
-      onPress: () => router.navigate("/(donation-request)/donation-request"),
-    },
+      onPress: () => router.navigate("/(donation-request)/donation-request")
+    }
   ];
 
   const stats = [
     { label: "Total Donors", value: "1,247", icon: "people" },
     { label: "Units Collected", value: "3,892", icon: "water" },
     { label: "Lives Saved", value: "11,676", icon: "heart" },
-    { label: "Active Requests", value: "23", icon: "time" },
+    { label: "Active Requests", value: "23", icon: "time" }
   ];
 
   const emergencyRequests = [
@@ -85,19 +85,19 @@ export default function HomePage() {
       bloodType: "O-",
       location: "City Hospital",
       urgency: "Critical",
-      timePosted: "2 hours ago",
+      timePosted: "2 hours ago"
     },
     {
       id: "2",
       bloodType: "A+",
       location: "General Hospital",
       urgency: "Urgent",
-      timePosted: "4 hours ago",
-    },
+      timePosted: "4 hours ago"
+    }
   ];
 
   const renderEmergencyRequest = ({
-    item,
+    item
   }: {
     item: (typeof emergencyRequests)[0];
   }) => (
@@ -111,8 +111,8 @@ export default function HomePage() {
             styles.urgencyTag,
             {
               backgroundColor:
-                item.urgency === "Critical" ? "#FF6B6B" : "#FF9F43",
-            },
+                item.urgency === "Critical" ? "#FF6B6B" : "#FF9F43"
+            }
           ]}
         >
           <Text style={styles.urgencyText}>{item.urgency}</Text>
@@ -151,7 +151,7 @@ export default function HomePage() {
             <Image
               source={require("@/assets/images/logo-text-primary.png")}
               style={styles.logo}
-              resizeMode='contain'
+              resizeMode="contain"
             />
             <Text style={styles.headerTitle}>Blood Donation Center</Text>
             <Text style={styles.headerSubtitle}>Saving lives together</Text>
@@ -249,7 +249,7 @@ export default function HomePage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.color.light,
+    backgroundColor: theme.color.light
   },
   header: {
     backgroundColor: theme.color.primary,
@@ -257,51 +257,51 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 30,
     borderBottomLeftRadius: 25,
-    borderBottomRightRadius: 25,
+    borderBottomRightRadius: 25
   },
   headerContent: {
-    alignItems: "center",
+    alignItems: "center"
   },
   logo: {
     width: 60,
     height: 60,
-    marginBottom: 10,
+    marginBottom: 10
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: "bold",
     color: theme.color.light,
-    textAlign: "center",
+    textAlign: "center"
   },
   headerSubtitle: {
     fontSize: 16,
     color: theme.color.light,
     textAlign: "center",
     opacity: 0.8,
-    marginTop: 5,
+    marginTop: 5
   },
   section: {
     paddingHorizontal: 20,
-    marginTop: 25,
+    marginTop: 25
   },
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: 15
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    color: theme.color.dark,
+    color: theme.color.dark
   },
   seeAllText: {
     color: theme.color.primary,
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "600"
   },
   emergencyList: {
-    paddingRight: 20,
+    paddingRight: 20
   },
   emergencyCard: {
     backgroundColor: theme.color.light,
@@ -315,46 +315,46 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 3
   },
   emergencyHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 10,
+    marginBottom: 10
   },
   bloodTypeTag: {
     backgroundColor: theme.color.primary,
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: 6
   },
   bloodTypeText: {
     color: theme.color.light,
     fontSize: 12,
-    fontWeight: "bold",
+    fontWeight: "bold"
   },
   urgencyTag: {
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: 6
   },
   urgencyText: {
     color: theme.color.light,
     fontSize: 12,
-    fontWeight: "bold",
+    fontWeight: "bold"
   },
   locationText: {
     fontSize: 16,
     fontWeight: "600",
     color: theme.color.dark,
-    marginBottom: 5,
+    marginBottom: 5
   },
   timeText: {
     fontSize: 12,
-    color: theme.color.gray,
+    color: theme.color.gray
   },
   quickActionsGrid: {
-    justifyContent: "space-between",
+    justifyContent: "space-between"
   },
   quickActionCard: {
     backgroundColor: theme.color.light,
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 3
   },
   quickActionIcon: {
     width: 50,
@@ -375,24 +375,24 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 10
   },
   quickActionTitle: {
     fontSize: 16,
     fontWeight: "bold",
     color: theme.color.dark,
     textAlign: "center",
-    marginBottom: 4,
+    marginBottom: 4
   },
   quickActionSubtitle: {
     fontSize: 12,
     color: theme.color.gray,
-    textAlign: "center",
+    textAlign: "center"
   },
   statsContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
+    justifyContent: "space-between"
   },
   statCard: {
     backgroundColor: theme.color.light,
@@ -405,22 +405,22 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 3
   },
   statValue: {
     fontSize: 24,
     fontWeight: "bold",
     color: theme.color.primary,
-    marginTop: 8,
+    marginTop: 8
   },
   statLabel: {
     fontSize: 12,
     color: theme.color.gray,
     textAlign: "center",
-    marginTop: 4,
+    marginTop: 4
   },
   bloodTypeList: {
-    paddingRight: 20,
+    paddingRight: 20
   },
   bloodTypeCard: {
     backgroundColor: theme.color.light,
@@ -432,17 +432,17 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 3
   },
   bloodTypeTitle: {
     fontSize: 24,
     fontWeight: "bold",
     color: theme.color.primary,
-    marginBottom: 5,
+    marginBottom: 5
   },
   bloodTypeCompatibility: {
     fontSize: 12,
     color: theme.color.gray,
-    lineHeight: 16,
-  },
+    lineHeight: 16
+  }
 });

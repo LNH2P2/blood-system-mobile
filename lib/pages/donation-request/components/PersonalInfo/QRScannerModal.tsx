@@ -21,6 +21,8 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
   onBarCodeScanned,
   onScanAgain
 }) => {
+  console.log('🎯 QRScannerModal render:', { visible, hasPermission, scanned })
+
   return (
     <Modal
       visible={visible}
