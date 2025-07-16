@@ -13,27 +13,27 @@ interface ServiceItem {
 const services: ServiceItem[] = [
   {
     id: "1",
-    title: "Đặt lịch",
-    icon: "medical",
-    color: "#4CAF50",
+    title: "Donate Blood",
+    icon: "heart",
+    color: "#FF6B6B",
   },
   {
     id: "2",
-    title: "Pharmacy",
-    icon: "medical-outline",
-    color: "#2196F3",
+    title: "Find Donor",
+    icon: "search",
+    color: "#4ECDC4",
   },
   {
     id: "3",
-    title: "Hospital",
-    icon: "business",
-    color: "#FF9800",
+    title: "Blood Bank",
+    icon: "medical",
+    color: "#45B7D1",
   },
   {
     id: "4",
-    title: "Ambulance",
-    icon: "car",
-    color: "#F44336",
+    title: "Emergency",
+    icon: "alert-circle",
+    color: "#FF9F43",
   },
 ];
 
@@ -55,10 +55,14 @@ export default function ServiceMenu() {
             flex: 1,
           }}
           onPress={() => {
-            if (service.title === "Đặt lịch") {
+            if (service.title === "Donate Blood") {
               router.navigate("/(donation-request)/donation-request");
-            } else if (service.title === "Hospital") {
-              router.navigate("/(hospital)/hospital-search");
+            } else if (service.title === "Find Donor") {
+              router.navigate("/(donation-request)/donation-place");
+            } else if (service.title === "Blood Bank") {
+              router.navigate("/(donation-request)/donation-blood");
+            } else if (service.title === "Emergency") {
+              router.navigate("/(donation-request)/donation-request");
             }
           }}
         >
