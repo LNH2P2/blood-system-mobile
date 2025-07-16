@@ -1,8 +1,6 @@
-import { addressApi } from "@/lib/api/provinces";
-import { District, Province, Ward } from "@/lib/types/hospital";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
@@ -13,90 +11,41 @@ import {
 } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
 
-export default function HospitalSearchScreen() {
-  const [provinces, setProvinces] = useState<Province[]>([]);
-  const [districts, setDistricts] = useState<District[]>([]);
-  const [wards, setWards] = useState<Ward[]>([]);
+import {
+  useDistricts,
+  useProvinces,
+  useWards,
+} from "@/lib/hooks/api/useProvinces";
 
+export default function HospitalSearchScreen() {
   const [selectedProvince, setSelectedProvince] = useState<string>("");
   const [selectedDistrict, setSelectedDistrict] = useState<string>("");
   const [selectedWard, setSelectedWard] = useState<string>("");
 
-  const [loading, setLoading] = useState(false);
-  const [loadingDistricts, setLoadingDistricts] = useState(false);
-  const [loadingWards, setLoadingWards] = useState(false);
+  // Use TanStack Query hooks
+  const {
+    data: provinces = [],
+    isLoading: loadingProvinces,
+    error: provincesError,
+    refetch: refetchProvinces,
+  } = useProvinces();
 
-  useEffect(() => {
-    loadProvinces();
-  }, []);
+  const { data: districts = [], isLoading: loadingDistricts } =
+    useDistricts(selectedProvince);
 
-  const loadProvinces = async () => {
-    setLoading(true);
-    try {
-      const data = await addressApi.getProvinces();
-      setProvinces(data);
-    } catch (error) {
-      console.error("Error loading provinces:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadDistricts = async (provinceCode: string) => {
-    setLoadingDistricts(true);
-    setDistricts([]);
-    setWards([]);
-    setSelectedDistrict("");
-    setSelectedWard("");
-
-    try {
-      const data = await addressApi.getDistricts(provinceCode);
-      setDistricts(data);
-    } catch (error) {
-      console.error("Error loading districts:", error);
-    } finally {
-      setLoadingDistricts(false);
-    }
-  };
-
-  const loadWards = async (districtCode: string) => {
-    setLoadingWards(true);
-    setWards([]);
-    setSelectedWard("");
-
-    try {
-      const data = await addressApi.getWards(districtCode);
-      setWards(data);
-    } catch (error) {
-      console.error("Error loading wards:", error);
-    } finally {
-      setLoadingWards(false);
-    }
-  };
-
+  const { data: wards = [], isLoading: loadingWards } =
+    useWards(selectedDistrict);
   const handleProvinceChange = (value: string) => {
     setSelectedProvince(value);
-    if (value) {
-      const province = provinces.find((p) => p.code === value);
-      if (province) {
-        loadDistricts(value);
-      }
-    } else {
-      setDistricts([]);
-      setWards([]);
-      setSelectedDistrict("");
-      setSelectedWard("");
-    }
+    // Reset dependent selections when province changes
+    setSelectedDistrict("");
+    setSelectedWard("");
   };
 
   const handleDistrictChange = (value: string) => {
     setSelectedDistrict(value);
-    if (value) {
-      loadWards(value);
-    } else {
-      setWards([]);
-      setSelectedWard("");
-    }
+    // Reset ward selection when district changes
+    setSelectedWard("");
   };
 
   const handleSearch = () => {
@@ -120,11 +69,30 @@ export default function HospitalSearchScreen() {
 
   const canSearch = selectedProvince && selectedDistrict;
 
-  if (loading) {
+  // Loading state for initial provinces load
+  if (loadingProvinces) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#DC2626" />
         <Text style={styles.loadingText}>Đang tải danh sách tỉnh thành...</Text>
+      </View>
+    );
+  }
+
+  // Error state for provinces load
+  if (provincesError) {
+    return (
+      <View style={styles.errorContainer}>
+        <Ionicons name="alert-circle" size={64} color="#DC2626" />
+        <Text style={styles.errorText}>
+          Không thể tải danh sách tỉnh thành. Vui lòng thử lại.
+        </Text>
+        <TouchableOpacity
+          style={styles.retryButton}
+          onPress={() => refetchProvinces()}
+        >
+          <Text style={styles.retryButtonText}>Thử lại</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -185,7 +153,6 @@ export default function HospitalSearchScreen() {
               )}
             </View>
           </View>
-
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Phường/Xã</Text>
             <View style={styles.pickerContainer}>
@@ -255,6 +222,30 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     color: "#666",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 32,
+    backgroundColor: "#f5f5f5",
+  },
+  errorText: {
+    fontSize: 16,
+    color: "#EF4444",
+    textAlign: "center",
+    marginVertical: 16,
+  },
+  retryButton: {
+    backgroundColor: "#DC2626",
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
   content: {
     padding: 20,

@@ -1,8 +1,8 @@
-import { hospitalApi } from "@/lib/api/hospitals";
 import { MedicalFacility } from "@/lib/types/hospital";
+import { useHospitals } from "@/lib/hooks/api/useHospitals";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -14,39 +14,32 @@ import {
 
 export default function HospitalListScreen() {
   const params = useLocalSearchParams();
-  const [hospitals, setHospitals] = useState<MedicalFacility[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [bloodTypeFilter, setBloodTypeFilter] = useState<string>("");
   const [componentFilter, setComponentFilter] = useState<string>("");
 
   const { province, district, ward } = params;
-  const loadHospitals = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await hospitalApi.getHospitals({
-        province: province as string,
-        district: district as string,
-        ward: ward as string,
-        bloodType: bloodTypeFilter || undefined,
-        component: componentFilter || undefined,
-      });
-      setHospitals(data);
-    } catch (error) {
-      console.error("Error loading hospitals:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [province, district, ward, bloodTypeFilter, componentFilter]);
 
-  useEffect(() => {
-    loadHospitals();
-  }, [loadHospitals]);
+  const searchParams = useMemo(
+    () => ({
+      province: province as string,
+      district: district as string,
+      ward: ward as string,
+      bloodType: bloodTypeFilter || undefined,
+      component: componentFilter || undefined,
+      limit: 50,
+    }),
+    [province, district, ward, bloodTypeFilter, componentFilter]
+  );
 
+  const { data: hospitalsResponse, isLoading: loading } =
+    useHospitals(searchParams);
+
+  const hospitals = hospitalsResponse?.data || [];
   const handleHospitalPress = (hospital: MedicalFacility) => {
     router.push({
       pathname: "/(hospital)/hospital-detail",
-      params: { hospitalId: hospital.id },
+      params: { hospitalId: hospital._id }, // Updated to use _id
     });
   };
 
@@ -228,7 +221,7 @@ export default function HospitalListScreen() {
         <FlatList
           data={hospitals}
           renderItem={renderHospitalCard}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item._id} // Updated to use _id
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
         />

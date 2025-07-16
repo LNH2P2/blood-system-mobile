@@ -27,7 +27,7 @@ export default function HomePage() {
           marginBottom: 12,
         }}
       >
-        <Text style={{ fontSize: 20, fontWeight: "bold" }}>Latest Blogs</Text>
+        <Text style={{ fontSize: 20, fontWeight: "bold" }}>Blogs</Text>
         <TouchableOpacity onPress={() => router.navigate("/blog")}>
           <Text style={{ color: "#007bff" }}>See all</Text>
         </TouchableOpacity>

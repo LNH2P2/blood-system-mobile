@@ -1,9 +1,8 @@
-import { hospitalApi } from "@/lib/api/hospitals";
-import { MedicalFacility } from "@/lib/types/hospital";
+import { useHospital } from "@/lib/hooks/api/useHospitals";
 import { Ionicons } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import { useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -18,8 +17,6 @@ import MapView, { Marker } from "react-native-maps";
 
 export default function HospitalDetailScreen() {
   const params = useLocalSearchParams();
-  const [hospital, setHospital] = useState<MedicalFacility | null>(null);
-  const [loading, setLoading] = useState(true);
   const [userLocation, setUserLocation] = useState<{
     latitude: number;
     longitude: number;
@@ -27,24 +24,16 @@ export default function HospitalDetailScreen() {
   const [distance, setDistance] = useState<number | null>(null);
 
   const { hospitalId } = params;
-  const loadHospital = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await hospitalApi.getHospitalDetails(hospitalId as string);
-      setHospital(data);
-    } catch (error) {
-      console.error("Error loading hospital:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [hospitalId]);
+  const { data: hospitalResponse, isLoading: loading } = useHospital(
+    hospitalId as string
+  );
 
+  const hospital = hospitalResponse?.data;
   useEffect(() => {
     if (hospitalId) {
-      loadHospital();
       getUserLocation();
     }
-  }, [hospitalId, loadHospital]);
+  }, [hospitalId]);
 
   const getUserLocation = async () => {
     try {
