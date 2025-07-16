@@ -1,29 +1,29 @@
-import { Blog } from '../types/blog'
-import axiosInstance from './axiosInstance'
+import { Blog } from "../types/blog";
+import axiosInstance from "./axiosInstance";
 
-const blogURL = '/blog'
+const blogURL = "/blog";
 
 class BlogApi {
   async getBlogs(): Promise<Blog[]> {
     try {
-      const res = await axiosInstance.get(blogURL)
-      return res.data.data
+      const res = await axiosInstance.get(blogURL);
+      return res.data.data.data;
     } catch (error) {
-      console.error('Error fetching blogs: ', error)
-      throw error
+      console.error("Error fetching blogs: ", error);
+      throw error;
     }
   }
   async getBlogById(id: string): Promise<Blog> {
     try {
-      const res = await axiosInstance.get(`${blogURL}/${id}`)
-      return res.data.data
+      const res = await axiosInstance.get(`${blogURL}/${id}`);
+      return res.data.data;
     } catch (error) {
-      console.error('Error fetching blog by id: ', error)
-      throw error
+      console.error("Error fetching blog by id: ", error);
+      throw error;
     }
   }
 }
 
-const blogApi = new BlogApi()
+const blogApi = new BlogApi();
 
-export default blogApi
+export default blogApi;
