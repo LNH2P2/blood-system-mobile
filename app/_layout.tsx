@@ -13,6 +13,7 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="(donation-request)" />
           <Stack.Screen name="(hospital)" />
+          <Stack.Screen name="(admin)" />
         </Stack>
       </AlertProvider>
     </QueryClientProvider>
