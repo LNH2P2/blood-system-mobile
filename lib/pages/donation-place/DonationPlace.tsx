@@ -1,5 +1,7 @@
 import { useBooking } from '@/lib/contexts/BookingContext'
+import { useGetListHospitalQuery } from '@/lib/hooks/api/useDonationRequest'
 import { theme } from '@/lib/theme'
+import { Hospital } from '@/lib/types'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import React from 'react'
@@ -11,128 +13,69 @@ import {
   View
 } from 'react-native'
 
-interface DonationPlace {
-  id: string
-  title: string
-  address: string
-  time: string
-  registerTime: string
-  date: string
-}
-
-const mockData: DonationPlace[] = [
-  {
-    id: '1',
-    title: 'Tòa nhà H14 - H15 đường Kinh Bắc Golden Gate',
-    address: 'đường Trần Phú, phường Đình Bảng, TP. Từ Sơn, Bắc Ninh',
-    time: '07:30 - 11:30',
-    registerTime: '',
-    date: '17/06/2025'
-  },
-  {
-    id: '2',
-    title: 'Tầng 3, Phòng khám Đa khoa Số 18 Quán sứ, Hoàn Kiếm, Hà Nội',
-    address: '(Đăng ký HM: Sáng từ 8h00 - 11h45; Chiều từ 13h30 - 16h30)',
-    time: '08:00 - 16:30',
-    registerTime: 'Sáng từ 8h00 - 11h45; Chiều từ 13h30 - 16h30',
-    date: '17/06/2025'
-  },
-  {
-    id: '3',
-    title:
-      'Trạm Y tế phường Nhân Chính, số 132 Phố Quan Nhân, Thanh Xuân, Hà Nội',
-    address: '(Đăng ký HM: Sáng từ 8h00 - 11h45; Chiều từ 13h30 - 16h30)',
-    time: '08:00 - 16:30',
-    registerTime: 'Sáng từ 8h00 - 11h45; Chiều từ 13h30 - 16h30',
-    date: '17/06/2025'
-  },
-  {
-    id: '4',
-    title: 'Phòng khám Đa khoa số 2, số 10 ngõ 122 đường Láng, Đống Đa, Hà Nội',
-    address: '(Đăng ký HM: Sáng từ 8h00 - 11h45; Chiều từ 13h30 - 16h30)',
-    time: '08:00 - 16:30',
-    registerTime: 'Sáng từ 8h00 - 11h45; Chiều từ 13h30 - 16h30',
-    date: '17/06/2025'
-  },
-  {
-    id: '5',
-    title:
-      'Hiến tiếu cầu (vui lòng đăng ký trước qua link tieucau.hienmau.vn hoặc gọi Sđt 0243 78218698)',
-    address:
-      'Viện Huyết học - Truyền máu TW, số 5 phố Phạm Văn Bạch, Cầu Giấy, Hà Nội',
-    time: '07:00 - 16:30',
-    registerTime: '',
-    date: '17/06/2025'
-  },
-  {
-    id: '6',
-    title:
-      'Bệnh viện Đa khoa Nông nghiệp, Km13 +500, Quốc lộ 1A, Ngọc Hồi, Thanh Trì, HN',
-    address: '(Đăng ký HM: Sáng từ 8h00 - 11h45; Chiều từ 13h30 - 16h30)',
-    time: '08:00 - 16:30',
-    registerTime: 'Sáng từ 8h00 - 11h45; Chiều từ 13h30 - 16h30',
-    date: '17/06/2025'
-  },
-  {
-    id: '7',
-    title:
-      'Hiến máu toàn phần, Viện Huyết học - Truyền máu TW, số 5 phố Phạm Văn Bạch, Cầu Giấy, Hà Nội',
-    address: '',
-    time: '07:00 - 18:00',
-    registerTime: '',
-    date: '17/06/2025'
-  },
-  {
-    id: '8',
-    title:
-      'Trung tâm Hội nghị Văn hóa tỉnh Lai Châu, TP. Lai Châu, tỉnh Lai Châu',
-    address: '',
-    time: '08:30 - 11:30',
-    registerTime: '',
-    date: '17/06/2025'
-  }
-]
-
 const DonationPlace = () => {
   const router = useRouter()
   const { setSelectedPlace } = useBooking()
+  const { data: hospitals } = useGetListHospitalQuery()
+  console.log('Hospitals:', hospitals?.data)
 
-  const handleSelectPlace = (place: DonationPlace) => {
+  const handleSelectPlace = (hospital: Hospital) => {
     setSelectedPlace({
-      id: place.id,
-      title: place.title,
-      address: place.address,
-      time: place.time,
-      date: place.date
+      id: hospital._id,
+      title: hospital.name,
+      address: `${hospital.address}, ${hospital.district}, ${hospital.province}`,
+      time: hospital.operatingHours,
+      date: '17/06/2025' // Current date
     })
     router.back()
   }
 
-  const renderItem = ({ item }: { item: DonationPlace }) => (
+  const renderItem = ({ item }: { item: Hospital }) => (
     <TouchableOpacity
       style={styles.placeItem}
       onPress={() => handleSelectPlace(item)}
     >
       <View style={styles.iconContainer}>
         <View style={styles.bloodIcon}>
-          <Ionicons name='water' size={20} color='white' />
+          <Ionicons name='medical' size={20} color='white' />
         </View>
       </View>
 
       <View style={styles.contentContainer}>
-        <Text style={styles.title} numberOfLines={3}>
-          {item.title}
+        <Text style={styles.title} numberOfLines={2}>
+          {item.name}
         </Text>
 
-        {item.address && (
-          <Text style={styles.address} numberOfLines={2}>
-            {item.address}
-          </Text>
+        <Text style={styles.address} numberOfLines={2}>
+          {item.address}, {item.district}, {item.province}
+        </Text>
+
+        <View style={styles.infoRow}>
+          <Ionicons name='time-outline' size={14} color='#666' />
+          <Text style={styles.operatingHours}>{item.operatingHours}</Text>
+        </View>
+
+        {item.contactInfo.phone && (
+          <View style={styles.infoRow}>
+            <Ionicons name='call-outline' size={14} color='#666' />
+            <Text style={styles.phone}>{item.contactInfo.phone}</Text>
+          </View>
         )}
 
-        <Text style={styles.dateTime}>
-          {item.date} {item.time}
-        </Text>
+        {item.services && item.services.length > 0 && (
+          <View style={styles.servicesContainer}>
+            {item.services.slice(0, 2).map((service, index) => (
+              <View key={index} style={styles.serviceTag}>
+                <Text style={styles.serviceText}>{service}</Text>
+              </View>
+            ))}
+            {item.services.length > 2 && (
+              <Text style={styles.moreServices}>
+                +{item.services.length - 2} khác
+              </Text>
+            )}
+          </View>
+        )}
       </View>
     </TouchableOpacity>
   )
@@ -140,9 +83,9 @@ const DonationPlace = () => {
   return (
     <View style={styles.container}>
       <FlatList
-        data={mockData}
+        data={hospitals?.data}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContainer}
       />
@@ -203,17 +146,59 @@ const styles = StyleSheet.create({
     flex: 1
   },
   title: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 16,
+    fontWeight: '700',
     color: '#333',
-    lineHeight: 20,
-    marginBottom: 4
+    lineHeight: 22,
+    marginBottom: 6
   },
   address: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#666',
     lineHeight: 18,
+    marginBottom: 8
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 4
+  },
+  operatingHours: {
+    fontSize: 12,
+    color: '#666',
+    marginLeft: 6,
+    fontWeight: '500'
+  },
+  phone: {
+    fontSize: 12,
+    color: '#3b82f6',
+    marginLeft: 6,
+    fontWeight: '500'
+  },
+  servicesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    marginTop: 6
+  },
+  serviceTag: {
+    backgroundColor: '#e8f2ff',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    marginRight: 6,
+    marginBottom: 3
+  },
+  serviceText: {
+    fontSize: 10,
+    color: '#3b82f6',
+    fontWeight: '600'
+  },
+  moreServices: {
+    fontSize: 10,
+    color: '#999',
+    fontStyle: 'italic',
+    fontWeight: '500'
   },
   dateTime: {
     fontSize: 12,

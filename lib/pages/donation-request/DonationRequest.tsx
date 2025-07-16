@@ -7,121 +7,62 @@ import {
   View
 } from 'react-native'
 
-// Types
-// import { useAlert } from '@/lib/hooks/useAlert'
+import { useGetListDonationReqQuery } from '@/lib/hooks/api/useDonationRequest'
+import { useNotifications } from '@/lib/hooks/useNotifications'
 import ListRequest from '@/lib/pages/donation-request/components/ListRequest'
-// import {
-//   FormData,
-//   FormErrors,
-//   initialFormData
-// } from '@/lib/pages/member/donation-request/types'
 import { theme } from '@/lib/theme'
 import { useRouter } from 'expo-router'
 
 export default function DonationRequestForm() {
-  // const [formData, setFormData] = useState<FormData>(initialFormData)
-  // const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
-  // const alert = useAlert()
+  const { scheduleAppointmentReminder, sendTestNotification } =
+    useNotifications()
 
-  // const validateForm = (): boolean => {
-  //   const newErrors: FormErrors = {}
+  const { data: donationRequests } = useGetListDonationReqQuery()
+  const handleAppointmentCreated = async (appointmentData: {
+    id: string
+    title: string
+    date: Date
+  }) => {
+    try {
+      const notificationIds = await scheduleAppointmentReminder(
+        appointmentData.id,
+        appointmentData.date,
+        appointmentData.title
+      )
 
-  //   if (!formData.fullName.trim()) {
-  //     newErrors.fullName = 'Họ tên là bắt buộc'
-  //   } else if (formData.fullName.length < 2) {
-  //     newErrors.fullName = 'Họ tên phải có ít nhất 2 ký tự'
-  //   }
+      console.log('Đã lên lịch thông báo cho cuộc hẹn:', notificationIds)
 
-  //   if (!formData.dateOfBirth) {
-  //     newErrors.dateOfBirth = 'Ngày sinh là bắt buộc'
-  //   }
-
-  //   if (!formData.gender) {
-  //     newErrors.gender = 'Giới tính là bắt buộc'
-  //   }
-
-  //   if (!formData.idNumber.trim()) {
-  //     newErrors.idNumber = 'Số CMND/CCCD là bắt buộc'
-  //   } else if (formData.idNumber.length < 9) {
-  //     newErrors.idNumber = 'Số CMND/CCCD phải có ít nhất 9 ký tự'
-  //   }
-
-  //   if (!formData.phoneNumber.trim()) {
-  //     newErrors.phoneNumber = 'Số điện thoại là bắt buộc'
-  //   } else if (formData.phoneNumber.length < 10) {
-  //     newErrors.phoneNumber = 'Số điện thoại phải có ít nhất 10 ký tự'
-  //   }
-
-  //   if (!formData.email.trim()) {
-  //     newErrors.email = 'Email là bắt buộc'
-  //   } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-  //     newErrors.email = 'Email không hợp lệ'
-  //   }
-
-  //   if (!formData.address.trim()) {
-  //     newErrors.address = 'Địa chỉ là bắt buộc'
-  //   } else if (formData.address.length < 5) {
-  //     newErrors.address = 'Địa chỉ phải có ít nhất 5 ký tự'
-  //   }
-
-  //   if (!formData.hasDonatedBefore) {
-  //     newErrors.hasDonatedBefore = 'Vui lòng chọn'
-  //   }
-
-  //   if (!formData.consent) {
-  //     newErrors.consent = 'Bạn phải đồng ý với các điều khoản'
-  //   }
-
-  //   setErrors(newErrors)
-  //   return Object.keys(newErrors).length === 0
-  // }
-
-  // const handleSubmit = async () => {
-  //   if (!validateForm()) {
-  //     alert.showError('Vui lòng kiểm tra lại thông tin')
-  //     return
-  //   }
-
-  //   setIsSubmitting(true)
-
-  //   try {
-  //     // Simulate API call
-  //     await new Promise((resolve) => setTimeout(resolve, 2000))
-
-  //     alert.showSuccess(
-  //       'Đăng ký hiến máu thành công. Chúng tôi sẽ liên hệ với bạn sớm.',
-  //       () => {
-  //         setFormData(initialFormData)
-  //         setErrors({})
-  //       }
-  //     )
-  //   } catch (error) {
-  //     alert.showError('Có lỗi xảy ra. Vui lòng thử lại.')
-  //   } finally {
-  //     setIsSubmitting(false)
-  //   }
-  // }
-
-  // const handleChange = (field: keyof FormData, value: any): void => {
-  //   setFormData({ ...formData, [field]: value })
-  // }
-
-  // // Hàm mới để cập nhật nhiều field cùng lúc
-  // const handleBulkChange = (updates: Partial<FormData>): void => {
-  //   setFormData((prevData) => ({ ...prevData, ...updates }))
-  // }
+      alert(
+        'Đặt lịch thành công! Bạn sẽ nhận được thông báo nhắc nhở trước khi đến hẹn.'
+      )
+    } catch (error) {
+      console.error('Lỗi khi lên lịch thông báo:', error)
+      alert('Đặt lịch thành công nhưng không thể tạo thông báo nhắc nhở.')
+    }
+  }
 
   return (
     <>
-      <ListRequest />
+      <ListRequest donationRequests={donationRequests?.data} />
 
       <View style={styles.buttonContainer}>
         <SubmitButton
           onPress={() => router.push('/(donation-request)/donation-blood')}
           isSubmitting={isSubmitting}
         />
+
+        {/* Nút test notification */}
+        <TouchableOpacity
+          style={[
+            styles.submitButton,
+            { backgroundColor: '#6366f1', marginTop: 10 }
+          ]}
+          onPress={sendTestNotification}
+        >
+          <Text style={styles.submitButtonText}>Test Thông báo</Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.bottomSpacing} />
@@ -192,5 +133,42 @@ const styles = StyleSheet.create({
   },
   bottomSpacing: {
     height: 20
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)'
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 20,
+    elevation: 4
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center'
+  },
+  modalButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    backgroundColor: '#f1f5f9',
+    marginBottom: 10,
+    elevation: 1
+  },
+  modalButtonText: {
+    marginLeft: 10,
+    fontSize: 16,
+    color: '#333'
+  },
+  cancelButton: {
+    backgroundColor: '#fee2e2'
   }
 })

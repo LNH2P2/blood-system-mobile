@@ -1,4 +1,6 @@
 import { useBooking } from '@/lib/contexts/BookingContext'
+import { useCreateDonationReqMutation } from '@/lib/hooks/api/useDonationRequest'
+import { useNotifications } from '@/lib/hooks/useNotifications'
 import { theme } from '@/lib/theme'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
@@ -15,12 +17,15 @@ import {
 const DonationBlood = () => {
   const router = useRouter()
   const { selectedPlace, setSelectedPlace } = useBooking()
+  const { scheduleAppointmentReminder } = useNotifications()
   const currentDate = new Date()
   const [selectedDate, setSelectedDate] = useState<number | null>(
     currentDate.getDate()
-  ) // Sử dụng ngày hiện tại
-  const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth()) // Tháng hiện tại
-  const [currentYear, setCurrentYear] = useState(currentDate.getFullYear()) // Năm hiện tại
+  )
+  const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth())
+  const [currentYear, setCurrentYear] = useState(currentDate.getFullYear())
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const createDonationReqMutation = useCreateDonationReqMutation()
 
   const months = [
     'January',
@@ -39,16 +44,13 @@ const DonationBlood = () => {
 
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
-  // Tính số ngày trong tháng
   const getDaysInMonth = (month: number, year: number) => {
     return new Date(year, month + 1, 0).getDate()
   }
 
-  // Tính ngày đầu tiên của tháng là thứ mấy
   const getFirstDayOfMonth = (month: number, year: number) => {
     return new Date(year, month, 1).getDay()
   }
-
   const navigateMonth = (direction: 'prev' | 'next') => {
     if (direction === 'prev') {
       if (currentMonth === 0) {
@@ -65,6 +67,37 @@ const DonationBlood = () => {
         setCurrentMonth(currentMonth + 1)
       }
     }
+
+    // Clear selected date if it becomes a past date after navigation
+    if (selectedDate) {
+      const newMonth =
+        direction === 'prev'
+          ? currentMonth === 0
+            ? 11
+            : currentMonth - 1
+          : currentMonth === 11
+          ? 0
+          : currentMonth + 1
+      const newYear =
+        direction === 'prev'
+          ? currentMonth === 0
+            ? currentYear - 1
+            : currentYear
+          : currentMonth === 11
+          ? currentYear + 1
+          : currentYear
+
+      const selectedDateObj = new Date(newYear, newMonth, selectedDate)
+      const currentDateOnly = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        currentDate.getDate()
+      )
+
+      if (selectedDateObj < currentDateOnly) {
+        setSelectedDate(null)
+      }
+    }
   }
 
   const renderCalendar = () => {
@@ -78,7 +111,6 @@ const DonationBlood = () => {
 
     const days = []
 
-    // Thêm các ô trống cho những ngày của tháng trước
     for (let i = 0; i < firstDay; i++) {
       days.push(
         <View key={`empty-${i}`} style={styles.dayContainer}>
@@ -86,11 +118,18 @@ const DonationBlood = () => {
         </View>
       )
     }
-
-    // Thêm các ngày trong tháng
     for (let day = 1; day <= daysInMonth; day++) {
       const isSelected = selectedDate === day
       const isToday = isCurrentMonth && today === day
+
+      // Check if the day is in the past
+      const dayDate = new Date(currentYear, currentMonth, day)
+      const currentDateOnly = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        currentDate.getDate()
+      )
+      const isPastDay = dayDate < currentDateOnly
 
       days.push(
         <View key={day} style={styles.dayContainer}>
@@ -98,18 +137,23 @@ const DonationBlood = () => {
             style={[
               styles.dayButton,
               isSelected && styles.selectedDay,
-              isToday && !isSelected && styles.todayDay
+              isToday && !isSelected && styles.todayDay,
+              isPastDay && styles.pastDay
             ]}
             onPress={() => {
-              setSelectedDate(day)
-              router.push('/(donation-request)/donation-place')
+              if (!isPastDay) {
+                setSelectedDate(day)
+                router.push('/(donation-request)/donation-place')
+              }
             }}
+            disabled={isPastDay}
           >
             <Text
               style={[
                 styles.dayText,
                 isSelected && styles.selectedDayText,
-                isToday && !isSelected && styles.todayDayText
+                isToday && !isSelected && styles.todayDayText,
+                isPastDay && styles.pastDayText
               ]}
             >
               {day}
@@ -120,6 +164,77 @@ const DonationBlood = () => {
     }
 
     return days
+  }
+  const handleBookingSubmit = async () => {
+    if (createDonationReqMutation.isPending) return
+    if (!selectedDate || !selectedPlace) {
+      alert('Vui lòng chọn ngày và địa điểm')
+      return
+    }
+
+    // Validate selected date is not in the past
+    const selectedDateObj = new Date(currentYear, currentMonth, selectedDate)
+    const currentDateOnly = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate()
+    )
+
+    if (selectedDateObj < currentDateOnly) {
+      alert(
+        'Không thể đặt lịch cho ngày trong quá khứ. Vui lòng chọn ngày khác.'
+      )
+      setSelectedDate(null) // Reset selected date
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const appointmentDate = new Date(
+        currentYear,
+        currentMonth,
+        selectedDate,
+        10,
+        0
+      ) // 10:00 AM default
+
+      const appointmentData = {
+        id: `appointment_${Date.now()}`,
+        title: `Hiến máu tại ${selectedPlace.title}`,
+        date: appointmentDate
+      }
+
+      await scheduleAppointmentReminder(
+        appointmentData.id,
+        appointmentData.date,
+        appointmentData.title
+      )
+      // console.log('Đã lên lịch thông báo:', notificationIds)
+
+      const response = await createDonationReqMutation.mutateAsync({
+        hospitalId: selectedPlace.id,
+        scheduleDate: appointmentDate.toISOString(),
+        userId: '6848f28cddd4f001f846e347'
+      })
+      console.log('response:', response)
+
+      // Reset form
+      setSelectedDate(null)
+      setCurrentMonth(currentDate.getMonth())
+      setCurrentYear(currentDate.getFullYear())
+      setSelectedPlace(null)
+
+      alert(
+        'Đặt lịch hiến máu thành công! Bạn sẽ nhận được thông báo nhắc nhở trước khi đến hẹn.'
+      )
+      router.push('/(donation-request)/donation-request')
+    } catch (error) {
+      console.error('Lỗi khi đặt lịch:', error)
+      alert('Có lỗi xảy ra khi đặt lịch. Vui lòng thử lại.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -193,29 +308,12 @@ const DonationBlood = () => {
         </View>
       </ScrollView>
 
-      {/* Nút đặt lịch - Fixed ở đáy màn hình */}
-
+      {/* Nút đặt lịch với notification */}
       {selectedDate && selectedPlace && (
         <View style={styles.bottomButtonContainer}>
           <SubmitButton
-            onPress={() => {
-              if (selectedDate && selectedPlace) {
-                // Xử lý logic đặt lịch ở đây
-                console.log(
-                  `Đặt lịch hiến máu vào ngày ${selectedDate} tại ${selectedPlace.title}`
-                )
-              } else {
-                alert('Vui lòng chọn ngày và địa điểm')
-              }
-
-              setSelectedDate(null)
-              setCurrentMonth(currentDate.getMonth())
-              setCurrentYear(currentDate.getFullYear())
-              setSelectedPlace(null)
-
-              router.push('/(donation-request)')
-            }}
-            isSubmitting={false}
+            onPress={handleBookingSubmit}
+            isSubmitting={isSubmitting}
           />
         </View>
       )}
@@ -329,6 +427,10 @@ const styles = StyleSheet.create({
   todayDay: {
     backgroundColor: '#f0f0f0'
   },
+  pastDay: {
+    backgroundColor: '#f5f5f5',
+    opacity: 0.5
+  },
   emptyDay: {
     flex: 1
   },
@@ -344,6 +446,10 @@ const styles = StyleSheet.create({
   todayDayText: {
     color: theme.color.primary,
     fontWeight: 'bold'
+  },
+  pastDayText: {
+    color: '#bbb',
+    fontWeight: '400'
   },
   locationSection: {
     margin: 16,

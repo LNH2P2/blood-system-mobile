@@ -1,11 +1,10 @@
 import { Ionicons } from '@expo/vector-icons'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { Picker } from '@react-native-picker/picker'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Modal, Platform, Text, TouchableOpacity, View } from 'react-native'
 
-import QRScannerModal from '@/lib/pages/member/donation-request/components/PersonalInfo/QRScannerModal'
-import { useQRScanner } from '../../../../../hooks/useQRScanner'
+import { useQRScannerContext } from '@/lib/contexts/QRScannerContext'
 import { FormData, FormErrors, formatDate } from '../../types'
 import FormInput from '../FormInput'
 import Section from '../Section'
@@ -25,25 +24,89 @@ const PersonalInfoSection = ({
   onBulkChange
 }: PersonalInfoSectionProps) => {
   const [showDatePicker, setShowDatePicker] = useState(false)
-
-  // State để quản lý hiển thị picker trên iOS
   const [showGenderPicker, setShowGenderPicker] = useState(false)
 
-  // Sử dụng hook useQRScanner
+  // Sử dụng hook mới với type safety
   const {
-    qrModalVisible,
-    setQrModalVisible,
-    optionsModalVisible,
-    setOptionsModalVisible,
-    hasPermission,
-    scanned,
-    setScanned,
     openQRScanner,
-    closeQRScanner,
-    openInAppScanner,
-    openExternalScanner,
-    handleBarCodeScanned
-  } = useQRScanner(onChange, onBulkChange, formatDate)
+    lastQRData, // ✨ Type: QRScannerData | null
+    qrResult, // ✨ Type: QRScannerResult | null
+    clearQRData
+  } = useQRScannerContext()
+
+  // Tự động điền form khi có QR data với type safety
+  useEffect(() => {
+    if (lastQRData) {
+      console.log('✅ QR Data received with types:')
+      console.log('Full Name:', lastQRData.fullName) // ✨ Type: string | undefined
+      console.log('Date of Birth:', lastQRData.dateOfBirth) // ✨ Type: Date | undefined
+      console.log('ID Number:', lastQRData.idNumber)
+      console.log('Gender:', lastQRData.gender) // ✨ Type: 'male' | 'female' | undefined
+      console.log('Address:', lastQRData.address)
+      console.log('Phone:', lastQRData.phoneNumber)
+      console.log('Email:', lastQRData.email)
+
+      // Auto-fill form với type safety
+      const updates: Partial<FormData> = {}
+
+      if (lastQRData.fullName) {
+        updates.fullName = lastQRData.fullName
+      }
+
+      if (lastQRData.dateOfBirth) {
+        updates.dateOfBirth = lastQRData.dateOfBirth
+      }
+
+      if (lastQRData.idNumber) {
+        updates.idNumber = lastQRData.idNumber
+      }
+
+      if (lastQRData.gender) {
+        updates.gender = lastQRData.gender
+      }
+
+      if (lastQRData.address) {
+        updates.address = lastQRData.address
+      }
+
+      if (lastQRData.phoneNumber) {
+        updates.phoneNumber = lastQRData.phoneNumber
+      }
+
+      if (lastQRData.email) {
+        updates.email = lastQRData.email
+      }
+
+      // Bulk update form
+      if (onBulkChange) {
+        onBulkChange(updates)
+      } else {
+        // Fallback: update từng field
+        Object.entries(updates).forEach(([key, value]) => {
+          onChange(key as keyof FormData, value)
+        })
+      }
+    }
+  }, [lastQRData])
+
+  // Handler để sử dụng QR data manually
+  const handleUseQRData = () => {
+    if (lastQRData) {
+      // ✅ Type-safe access
+      const fullName = lastQRData.fullName // Type: string | undefined
+      const dateOfBirth = lastQRData.dateOfBirth // Type: Date | undefined
+
+      if (fullName) {
+        console.log('Using full name:', fullName)
+        onChange('fullName', fullName)
+      }
+
+      if (dateOfBirth) {
+        console.log('Using date of birth:', dateOfBirth)
+        onChange('dateOfBirth', dateOfBirth)
+      }
+    }
+  }
 
   const onDateChange = (event: any, selectedDate?: Date) => {
     setShowDatePicker(false)
@@ -70,26 +133,26 @@ const PersonalInfoSection = ({
       }
     >
       {/* QR Scanner Modal */}
-      <QRScannerModal
+      {/* <QRScannerModal
         visible={qrModalVisible}
         hasPermission={hasPermission}
         scanned={scanned}
         onClose={closeQRScanner}
         onBarCodeScanned={handleBarCodeScanned}
         onScanAgain={() => setScanned(false)}
-      />
+      /> */}
 
       {/* Options Modal */}
       <Modal
-        visible={optionsModalVisible}
+        visible={false}
         transparent={true}
         animationType='fade'
-        onRequestClose={() => setOptionsModalVisible(false)}
+        onRequestClose={() => setShowGenderPicker(false)}
       >
         <View style={styles.optionsContainer}>
           <View style={styles.optionButtonContainer}>
             <TouchableOpacity
-              onPress={openInAppScanner}
+              onPress={openQRScanner}
               style={styles.optionButton}
             >
               <Text style={styles.optionButtonText}>
@@ -99,7 +162,7 @@ const PersonalInfoSection = ({
           </View>
           <View style={styles.optionButtonContainer}>
             <TouchableOpacity
-              onPress={openExternalScanner}
+              onPress={openQRScanner}
               style={styles.optionButton}
             >
               <Text style={styles.optionButtonText}>
@@ -109,7 +172,7 @@ const PersonalInfoSection = ({
           </View>
           <View style={styles.optionButtonContainer}>
             <TouchableOpacity
-              onPress={() => setOptionsModalVisible(false)}
+              onPress={() => setShowGenderPicker(false)}
               style={styles.optionButton}
             >
               <Text style={styles.optionButtonText}>Hủy</Text>
