@@ -1,4 +1,5 @@
 import LoadingOverlay from "@/lib/components/Loading";
+import { useAuth } from "@/lib/contexts/AuthContext";
 import { useBlogs } from "@/lib/hooks/api/useBlog";
 import { theme } from "@/lib/theme";
 import { Ionicons } from "@expo/vector-icons";
@@ -12,7 +13,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BlogList from "../blog/components/BlogList";
@@ -21,6 +22,7 @@ const { width } = Dimensions.get("window");
 
 export default function HomePage() {
   const router = useRouter();
+  const { user } = useAuth();
   const { data: blogs, isLoading } = useBlogs();
 
   // Only get the first 3 blogs
@@ -30,200 +32,136 @@ export default function HomePage() {
     return <LoadingOverlay visible={isLoading} />;
   }
 
-  const bloodTypes = [
-    { type: "A+", compatibility: "Có thể hiến cho A+, AB+" },
-    { type: "O-", compatibility: "Nhóm máu cho mọi người" },
-    { type: "AB+", compatibility: "Nhận máu từ mọi nhóm" },
-    { type: "B-", compatibility: "Có thể hiến cho B-, B+, AB-, AB+" }
-  ];
-
   const quickActions = [
     {
       id: "1",
-      title: "Đăng ký hiến máu",
-      subtitle: "Tham gia hiến máu",
-      icon: "heart",
-      color: "#FF6B6B",
-      onPress: () => router.navigate("/(donation-request)/donation-request")
-    },
-
-    {
-      id: "3",
-      title: "Ngân hàng máu",
-      subtitle: "Kiểm tra số lượng",
-      icon: "medical",
-      color: "#45B7D1",
-      onPress: () => router.navigate("/(donation-request)/donation-blood")
-    },
-    {
-      id: "4",
-      title: "Khẩn cấp",
-      subtitle: "Cần máu gấp",
-      icon: "alert-circle",
-      color: "#FF9F43",
-      onPress: () => router.navigate("/(donation-request)/donation-request")
-    }
-  ];
-
-  const stats = [
-    { label: "Tổng số người hiến", value: "1,247", icon: "people" },
-    { label: "Đơn vị máu đã nhận", value: "3,892", icon: "water" },
-    { label: "Số người được cứu", value: "11,676", icon: "heart" },
-    { label: "Yêu cầu đang hoạt động", value: "23", icon: "time" }
-  ];
-
-  const emergencyRequests = [
-    {
-      id: "1",
-      bloodType: "O-",
-      location: "Bệnh viện Thành phố",
-      urgency: "Khẩn cấp",
-      timePosted: "2 giờ trước"
+      title: "Đặt lịch",
+      icon: "calendar",
+      color: "#5D5FEF",
+      backgroundColor: "#F1F1FE",
+      onPress: () => router.navigate("/(donation-request)/donation-request"),
     },
     {
       id: "2",
-      bloodType: "A+",
-      location: "Bệnh viện Đa khoa",
-      urgency: "Gấp",
-      timePosted: "4 giờ trước"
-    }
+      title: "Địa điểm",
+      icon: "location",
+      color: "#F5AF19",
+      backgroundColor: "#FFF9E6",
+      onPress: () => router.navigate("/(hospital)/hospital-list"),
+    },
+    {
+      id: "3",
+      title: "Bệnh viện",
+      icon: "medical",
+      color: "#FF6B35",
+      backgroundColor: "#FFE6DE",
+      onPress: () => router.navigate("/(hospital)/hospital-list"),
+    },
+    {
+      id: "4",
+      title: "Nhóm",
+      icon: "people",
+      color: "#56CCF2",
+      backgroundColor: "#E5F7FF",
+      onPress: () => router.navigate("/(tabs)/profile"),
+    },
+    {
+      id: "5",
+      title: "Bạn bè",
+      icon: "person-add",
+      color: "#6FCF97",
+      backgroundColor: "#E8F8F0",
+      onPress: () => router.navigate("/(tabs)/profile"),
+    },
+    {
+      id: "6",
+      title: "Liên hệ",
+      icon: "card",
+      color: "#FF5C5C",
+      backgroundColor: "#FFE5E5",
+      onPress: () => router.navigate("/(tabs)/profile"),
+    },
+    {
+      id: "7",
+      title: "Ưu đãi",
+      icon: "gift",
+      color: "#9B59B6",
+      backgroundColor: "#F4E8FF",
+      onPress: () => router.navigate("/(tabs)/blog"),
+    },
+    {
+      id: "8",
+      title: "Hỗi đáp",
+      icon: "headset",
+      color: "#2ECC71",
+      backgroundColor: "#E8F8F0",
+      onPress: () => router.navigate("/(tabs)/profile"),
+    },
   ];
 
-  const renderEmergencyRequest = ({
-    item
-  }: {
-    item: (typeof emergencyRequests)[0];
-  }) => (
-    <TouchableOpacity style={styles.emergencyCard}>
-      <View style={styles.emergencyHeader}>
-        <View style={styles.bloodTypeTag}>
-          <Text style={styles.bloodTypeText}>{item.bloodType}</Text>
-        </View>
-        <View
-          style={[
-            styles.urgencyTag,
-            {
-              backgroundColor:
-                item.urgency === "Critical" ? "#FF6B6B" : "#FF9F43"
-            }
-          ]}
-        >
-          <Text style={styles.urgencyText}>{item.urgency}</Text>
-        </View>
-      </View>
-      <Text style={styles.locationText}>{item.location}</Text>
-      <Text style={styles.timeText}>{item.timePosted}</Text>
-    </TouchableOpacity>
-  );
-
   const renderQuickAction = ({ item }: { item: (typeof quickActions)[0] }) => (
-    <TouchableOpacity style={styles.quickActionCard} onPress={item.onPress}>
-      <View
-        style={[styles.quickActionIcon, { backgroundColor: `${item.color}20` }]}
-      >
+    <TouchableOpacity
+      style={[
+        styles.quickActionCard,
+        { backgroundColor: item.backgroundColor },
+      ]}
+      onPress={item.onPress}
+    >
+      <View style={styles.quickActionIcon}>
         <Ionicons name={item.icon as any} size={24} color={item.color} />
       </View>
       <Text style={styles.quickActionTitle}>{item.title}</Text>
-      <Text style={styles.quickActionSubtitle}>{item.subtitle}</Text>
     </TouchableOpacity>
-  );
-
-  const renderBloodType = ({ item }: { item: (typeof bloodTypes)[0] }) => (
-    <View style={styles.bloodTypeCard}>
-      <Text style={styles.bloodTypeTitle}>{item.type}</Text>
-      <Text style={styles.bloodTypeCompatibility}>{item.compatibility}</Text>
-    </View>
   );
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header */}
+        {/* Header with User Info */}
         <View style={styles.header}>
-          <View style={styles.headerContent}>
-            <Image
-              source={require("@/assets/images/logo-text-primary.png")}
-              style={styles.logo}
-              resizeMode="contain"
-            />
-            <Text style={styles.headerTitle}>Trung tâm Hiến máu</Text>
-            <Text style={styles.headerSubtitle}>Chung tay cứu người</Text>
-          </View>
-        </View>
-
-        {/* Emergency Alerts */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Yêu cầu khẩn cấp</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAllText}>Xem tất cả</Text>
+          <View style={styles.headerTop}>
+            <View style={styles.userInfo}>
+              <Text style={styles.greeting}>
+                Xin chào, {user?.fullName || "Bạn"}
+              </Text>
+              <Text style={styles.subGreeting}>
+                Bạn đã đủ điều kiện hiến máu!
+              </Text>
+            </View>
+            <TouchableOpacity style={styles.profileContainer}>
+              {user?.avatar ? (
+                <Image
+                  source={{ uri: user.avatar }}
+                  style={styles.profileImage}
+                />
+              ) : (
+                <View style={styles.defaultProfile}>
+                  <Ionicons name='person' size={24} color={theme.color.white} />
+                </View>
+              )}
             </TouchableOpacity>
           </View>
-          <FlatList
-            data={emergencyRequests}
-            renderItem={renderEmergencyRequest}
-            keyExtractor={(item) => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.emergencyList}
-          />
         </View>
 
-        {/* Quick Actions */}
+        {/* Quick Actions Grid */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Tác vụ nhanh</Text>
           <FlatList
             data={quickActions}
             renderItem={renderQuickAction}
             keyExtractor={(item) => item.id}
-            numColumns={2}
+            numColumns={4}
             scrollEnabled={false}
             contentContainerStyle={styles.quickActionsGrid}
+            columnWrapperStyle={styles.quickActionRow}
           />
         </View>
 
-        {/* Statistics */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Thống kê</Text>
-          <View style={styles.statsContainer}>
-            {stats.map((stat, index) => (
-              <View key={index} style={styles.statCard}>
-                <Ionicons
-                  name={stat.icon as any}
-                  size={20}
-                  color={theme.color.primary}
-                />
-                <Text style={styles.statValue}>{stat.value}</Text>
-                <Text style={styles.statLabel}>{stat.label}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
-
-        {/* Blood Type Information */}
+        {/* News Section - Using Blog */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Thông tin nhóm máu</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAllText}>Tìm hiểu thêm</Text>
-            </TouchableOpacity>
-          </View>
-          <FlatList
-            data={bloodTypes}
-            renderItem={renderBloodType}
-            keyExtractor={(item) => item.type}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.bloodTypeList}
-          />
-        </View>
-
-        {/* Latest Blogs */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Bài viết mới nhất</Text>
-            <TouchableOpacity onPress={() => router.navigate("/blog")}>
-              <Text style={styles.seeAllText}>Xem tất cả</Text>
+            <Text style={styles.sectionTitle}>Tin tức</Text>
+            <TouchableOpacity onPress={() => router.navigate("/(tabs)/blog")}>
+              <Text style={styles.seeAllText}>Tất cả</Text>
             </TouchableOpacity>
           </View>
           <FlatList
@@ -242,200 +180,185 @@ export default function HomePage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.color.light
+    backgroundColor: theme.color.light,
   },
   header: {
     backgroundColor: theme.color.primary,
     paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 30,
-    borderBottomLeftRadius: 25,
-    borderBottomRightRadius: 25
+    paddingVertical: 40,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  headerContent: {
-    alignItems: "center"
+  headerTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
   },
-  logo: {
-    width: 60,
-    height: 60,
-    marginBottom: 10
+  userInfo: {
+    flex: 1,
   },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: theme.color.light,
-    textAlign: "center"
+  greeting: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: theme.color.white,
+    marginBottom: 4,
   },
-  headerSubtitle: {
+  subGreeting: {
+    fontSize: 14,
+    color: theme.color.white,
+    opacity: 0.9,
+    fontStyle: "italic",
+  },
+  profileContainer: {
+    marginLeft: 15,
+  },
+  profileImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    borderWidth: 2,
+    borderColor: theme.color.white,
+  },
+  defaultProfile: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: theme.color.white,
+  },
+  bloodInfoContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 10,
+  },
+  bloodTypeCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: theme.color.primary,
+    borderWidth: 3,
+    borderColor: theme.color.white,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  bloodTypeText: {
     fontSize: 16,
-    color: theme.color.light,
-    textAlign: "center",
-    opacity: 0.8,
-    marginTop: 5
+    fontWeight: "bold",
+    color: theme.color.white,
+  },
+  bloodTypeLabel: {
+    fontSize: 12,
+    color: theme.color.white,
+    marginTop: 2,
+  },
+  donationInfoCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: theme.color.primary,
+    borderWidth: 3,
+    borderColor: theme.color.white,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  donationCountText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: theme.color.white,
+  },
+  donationCountLabel: {
+    fontSize: 12,
+    color: theme.color.white,
+    marginTop: 2,
   },
   section: {
     paddingHorizontal: 20,
-    marginTop: 25
+    marginTop: 25,
   },
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 15
+    marginBottom: 15,
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    color: theme.color.dark
+    color: theme.color.dark,
   },
   seeAllText: {
     color: theme.color.primary,
     fontSize: 16,
-    fontWeight: "600"
-  },
-  emergencyList: {
-    paddingRight: 20
-  },
-  emergencyCard: {
-    backgroundColor: theme.color.light,
-    padding: 15,
-    borderRadius: 12,
-    marginRight: 12,
-    width: width * 0.7,
-    borderLeftWidth: 4,
-    borderLeftColor: "#FF6B6B",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3
-  },
-  emergencyHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 10
-  },
-  bloodTypeTag: {
-    backgroundColor: theme.color.primary,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6
-  },
-  bloodTypeText: {
-    color: theme.color.light,
-    fontSize: 12,
-    fontWeight: "bold"
-  },
-  urgencyTag: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6
-  },
-  urgencyText: {
-    color: theme.color.light,
-    fontSize: 12,
-    fontWeight: "bold"
-  },
-  locationText: {
-    fontSize: 16,
     fontWeight: "600",
-    color: theme.color.dark,
-    marginBottom: 5
-  },
-  timeText: {
-    fontSize: 12,
-    color: theme.color.gray
   },
   quickActionsGrid: {
-    justifyContent: "space-between"
+    paddingTop: 10,
+  },
+  quickActionRow: {
+    justifyContent: "space-around",
+    paddingHorizontal: 10,
   },
   quickActionCard: {
-    backgroundColor: theme.color.light,
-    padding: 20,
-    borderRadius: 16,
     alignItems: "center",
-    width: (width - 60) / 2,
-    marginBottom: 15,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3
+    width: (width - 100) / 4,
+    marginBottom: 20,
+    paddingVertical: 15,
+    paddingHorizontal: 5,
+    borderRadius: 16,
   },
   quickActionIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 10
+    marginBottom: 8,
   },
   quickActionTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 12,
+    fontWeight: "500",
     color: theme.color.dark,
     textAlign: "center",
-    marginBottom: 4
   },
-  quickActionSubtitle: {
-    fontSize: 12,
-    color: theme.color.gray,
-    textAlign: "center"
+  bannerContainer: {
+    backgroundColor: theme.color.primary,
+    borderRadius: 16,
+    overflow: "hidden",
+    marginVertical: 10,
   },
-  statsContainer: {
+  bannerContent: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between"
-  },
-  statCard: {
-    backgroundColor: theme.color.light,
-    padding: 15,
-    borderRadius: 12,
     alignItems: "center",
-    width: (width - 60) / 2,
-    marginBottom: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3
+    padding: 20,
   },
-  statValue: {
-    fontSize: 24,
+  bannerLeft: {
+    marginRight: 20,
+  },
+  bannerIcon: {
+    width: 60,
+    height: 60,
+    tintColor: theme.color.white,
+  },
+  bannerRight: {
+    flex: 1,
+  },
+  bannerTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: theme.color.white,
+    marginBottom: 4,
+  },
+  bannerNumber: {
+    fontSize: 32,
     fontWeight: "bold",
-    color: theme.color.primary,
-    marginTop: 8
+    color: theme.color.white,
+    marginBottom: 4,
   },
-  statLabel: {
-    fontSize: 12,
-    color: theme.color.gray,
-    textAlign: "center",
-    marginTop: 4
+  bannerSubtitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: theme.color.white,
+    lineHeight: 18,
   },
-  bloodTypeList: {
-    paddingRight: 20
-  },
-  bloodTypeCard: {
-    backgroundColor: theme.color.light,
-    padding: 15,
-    borderRadius: 12,
-    marginRight: 12,
-    width: 160,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3
-  },
-  bloodTypeTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: theme.color.primary,
-    marginBottom: 5
-  },
-  bloodTypeCompatibility: {
-    fontSize: 12,
-    color: theme.color.gray,
-    lineHeight: 16
-  }
 });
