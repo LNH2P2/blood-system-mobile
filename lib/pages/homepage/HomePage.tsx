@@ -1,6 +1,6 @@
 import LoadingOverlay from "@/lib/components/Loading";
-import { useAuth } from "@/lib/contexts/AuthContext";
 import { useBlogs } from "@/lib/hooks/api/useBlog";
+import { useUserById } from "@/lib/hooks/api/useUser";
 import { theme } from "@/lib/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -13,7 +13,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BlogList from "../blog/components/BlogList";
@@ -22,7 +22,10 @@ const { width } = Dimensions.get("window");
 
 export default function HomePage() {
   const router = useRouter();
-  const { user } = useAuth();
+  // const { user } = useAuth();
+
+  const { data: user } = useUserById("687aa3bdbb57032008becc23");
+
   const { data: blogs, isLoading } = useBlogs();
 
   // Only get the first 3 blogs
@@ -39,7 +42,7 @@ export default function HomePage() {
       icon: "calendar",
       color: "#5D5FEF",
       backgroundColor: "#F1F1FE",
-      onPress: () => router.navigate("/(donation-request)/donation-request"),
+      onPress: () => router.navigate("/(donation-request)/donation-request")
     },
     {
       id: "2",
@@ -47,7 +50,7 @@ export default function HomePage() {
       icon: "location",
       color: "#F5AF19",
       backgroundColor: "#FFF9E6",
-      onPress: () => router.navigate("/(hospital)/hospital-list"),
+      onPress: () => router.navigate("/(hospital)/hospital-list")
     },
     {
       id: "3",
@@ -55,7 +58,7 @@ export default function HomePage() {
       icon: "medical",
       color: "#FF6B35",
       backgroundColor: "#FFE6DE",
-      onPress: () => router.navigate("/(hospital)/hospital-list"),
+      onPress: () => router.navigate("/(hospital)/hospital-list")
     },
     {
       id: "4",
@@ -63,7 +66,7 @@ export default function HomePage() {
       icon: "people",
       color: "#56CCF2",
       backgroundColor: "#E5F7FF",
-      onPress: () => router.navigate("/(tabs)/profile"),
+      onPress: () => router.navigate("/(tabs)/profile")
     },
     {
       id: "5",
@@ -71,7 +74,7 @@ export default function HomePage() {
       icon: "person-add",
       color: "#6FCF97",
       backgroundColor: "#E8F8F0",
-      onPress: () => router.navigate("/(tabs)/profile"),
+      onPress: () => router.navigate("/(tabs)/profile")
     },
     {
       id: "6",
@@ -79,7 +82,7 @@ export default function HomePage() {
       icon: "card",
       color: "#FF5C5C",
       backgroundColor: "#FFE5E5",
-      onPress: () => router.navigate("/(tabs)/profile"),
+      onPress: () => router.navigate("/(tabs)/profile")
     },
     {
       id: "7",
@@ -87,7 +90,7 @@ export default function HomePage() {
       icon: "gift",
       color: "#9B59B6",
       backgroundColor: "#F4E8FF",
-      onPress: () => router.navigate("/(tabs)/blog"),
+      onPress: () => router.navigate("/(tabs)/blog")
     },
     {
       id: "8",
@@ -95,15 +98,15 @@ export default function HomePage() {
       icon: "headset",
       color: "#2ECC71",
       backgroundColor: "#E8F8F0",
-      onPress: () => router.navigate("/(tabs)/profile"),
-    },
+      onPress: () => router.navigate("/(tabs)/profile")
+    }
   ];
 
   const renderQuickAction = ({ item }: { item: (typeof quickActions)[0] }) => (
     <TouchableOpacity
       style={[
         styles.quickActionCard,
-        { backgroundColor: item.backgroundColor },
+        { backgroundColor: item.backgroundColor }
       ]}
       onPress={item.onPress}
     >
@@ -129,14 +132,14 @@ export default function HomePage() {
               </Text>
             </View>
             <TouchableOpacity style={styles.profileContainer}>
-              {user?.avatar ? (
+              {user?.image ? (
                 <Image
-                  source={{ uri: user.avatar }}
+                  source={{ uri: user.image }}
                   style={styles.profileImage}
                 />
               ) : (
                 <View style={styles.defaultProfile}>
-                  <Ionicons name='person' size={24} color={theme.color.white} />
+                  <Ionicons name="person" size={24} color={theme.color.white} />
                 </View>
               )}
             </TouchableOpacity>
@@ -180,7 +183,7 @@ export default function HomePage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.color.light,
+    backgroundColor: theme.color.light
   },
   header: {
     backgroundColor: theme.color.primary,
@@ -189,38 +192,38 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "center"
   },
   headerTop: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    width: "100%",
+    width: "100%"
   },
   userInfo: {
-    flex: 1,
+    flex: 1
   },
   greeting: {
     fontSize: 18,
     fontWeight: "600",
     color: theme.color.white,
-    marginBottom: 4,
+    marginBottom: 4
   },
   subGreeting: {
     fontSize: 14,
     color: theme.color.white,
     opacity: 0.9,
-    fontStyle: "italic",
+    fontStyle: "italic"
   },
   profileContainer: {
-    marginLeft: 15,
+    marginLeft: 15
   },
   profileImage: {
     width: 50,
     height: 50,
     borderRadius: 25,
     borderWidth: 2,
-    borderColor: theme.color.white,
+    borderColor: theme.color.white
   },
   defaultProfile: {
     width: 50,
@@ -230,12 +233,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 2,
-    borderColor: theme.color.white,
+    borderColor: theme.color.white
   },
   bloodInfoContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginTop: 10,
+    marginTop: 10
   },
   bloodTypeCircle: {
     width: 80,
@@ -245,17 +248,17 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: theme.color.white,
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "center"
   },
   bloodTypeText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: theme.color.white,
+    color: theme.color.white
   },
   bloodTypeLabel: {
     fontSize: 12,
     color: theme.color.white,
-    marginTop: 2,
+    marginTop: 2
   },
   donationInfoCircle: {
     width: 80,
@@ -265,44 +268,44 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: theme.color.white,
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "center"
   },
   donationCountText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: theme.color.white,
+    color: theme.color.white
   },
   donationCountLabel: {
     fontSize: 12,
     color: theme.color.white,
-    marginTop: 2,
+    marginTop: 2
   },
   section: {
     paddingHorizontal: 20,
-    marginTop: 25,
+    marginTop: 25
   },
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: 15
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    color: theme.color.dark,
+    color: theme.color.dark
   },
   seeAllText: {
     color: theme.color.primary,
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "600"
   },
   quickActionsGrid: {
-    paddingTop: 10,
+    paddingTop: 10
   },
   quickActionRow: {
     justifyContent: "space-around",
-    paddingHorizontal: 10,
+    paddingHorizontal: 10
   },
   quickActionCard: {
     alignItems: "center",
@@ -310,55 +313,55 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingVertical: 15,
     paddingHorizontal: 5,
-    borderRadius: 16,
+    borderRadius: 16
   },
   quickActionIcon: {
-    marginBottom: 8,
+    marginBottom: 8
   },
   quickActionTitle: {
     fontSize: 12,
     fontWeight: "500",
     color: theme.color.dark,
-    textAlign: "center",
+    textAlign: "center"
   },
   bannerContainer: {
     backgroundColor: theme.color.primary,
     borderRadius: 16,
     overflow: "hidden",
-    marginVertical: 10,
+    marginVertical: 10
   },
   bannerContent: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 20,
+    padding: 20
   },
   bannerLeft: {
-    marginRight: 20,
+    marginRight: 20
   },
   bannerIcon: {
     width: 60,
     height: 60,
-    tintColor: theme.color.white,
+    tintColor: theme.color.white
   },
   bannerRight: {
-    flex: 1,
+    flex: 1
   },
   bannerTitle: {
     fontSize: 16,
     fontWeight: "600",
     color: theme.color.white,
-    marginBottom: 4,
+    marginBottom: 4
   },
   bannerNumber: {
     fontSize: 32,
     fontWeight: "bold",
     color: theme.color.white,
-    marginBottom: 4,
+    marginBottom: 4
   },
   bannerSubtitle: {
     fontSize: 14,
     fontWeight: "600",
     color: theme.color.white,
-    lineHeight: 18,
-  },
+    lineHeight: 18
+  }
 });

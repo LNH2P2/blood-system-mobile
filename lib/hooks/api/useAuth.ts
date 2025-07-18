@@ -19,7 +19,7 @@ export function useLoginMutation() {
       // Gọi API thật tới localhost:3000/auth/login
       const response = await axiosInstance.post("auth/login", {
         ...data,
-        deviceInfo: "ios"
+        deviceInfo: "android"
       });
       // axios trả về response.data
       const result: AuthResponse = response.data;
