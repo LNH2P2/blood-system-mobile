@@ -34,10 +34,6 @@ export default function Index() {
         title="Bệnh viện"
         onPress={() => router.navigate("/(hospital)/hospital-search")}
       />
-      <Button
-        title="Admin"
-        onPress={() => router.navigate("/(admin)/admin-dashboard")}
-      />
       <Button title="Show Splash Screen" onPress={() => setShowSplash(true)} />
       <Button title="Show Onboarding" onPress={() => setShowOnboarding(true)} />
     </View>
