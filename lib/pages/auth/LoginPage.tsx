@@ -16,11 +16,11 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 interface LoginFormData {
-  email: string;
+  username: string;
   password: string;
 }
 
@@ -30,74 +30,55 @@ const LoginPage: React.FC = () => {
   const { login } = useAuth();
   const loginMutation = useLoginMutation();
   const [formData, setFormData] = useState<LoginFormData>({
-    email: "",
-    password: "",
+    username: "",
+    password: ""
   });
   const [showPassword, setShowPassword] = useState(false);
 
   const handleInputChange = (field: keyof LoginFormData, value: string) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: value,
+      [field]: value
     }));
   };
 
   const validateForm = (): boolean => {
-    if (!formData.email.trim()) {
+    if (!formData.username.trim()) {
       showAlert({
         title: "Lỗi",
-        message: "Vui lòng nhập email",
+        message: "Vui lòng nhập tên đăng nhập"
       });
       return false;
     }
-
-    if (!formData.email.includes("@")) {
-      showAlert({
-        title: "Lỗi",
-        message: "Email không hợp lệ",
-      });
-      return false;
-    }
-
     if (!formData.password.trim()) {
       showAlert({
         title: "Lỗi",
-        message: "Vui lòng nhập mật khẩu",
+        message: "Vui lòng nhập mật khẩu"
       });
       return false;
     }
-
     if (formData.password.length < 6) {
       showAlert({
         title: "Lỗi",
-        message: "Mật khẩu phải có ít nhất 6 ký tự",
+        message: "Mật khẩu phải có ít nhất 6 ký tự"
       });
       return false;
     }
-
     return true;
   };
 
   const handleLogin = async () => {
     if (!validateForm()) return;
-
     try {
       const result = await loginMutation.mutateAsync({
-        email: formData.email,
-        password: formData.password,
+        username: formData.username,
+        password: formData.password
       });
-
-      if (result.success && result.data) {
-        // Update auth context
-        await login(
-          result.data.user,
-          result.data.token,
-          result.data.refreshToken
-        );
-
+      if (result.data) {
+        await login(result.data.access_token, result.data.refresh_token);
         showAlert({
           title: "Thành công",
-          message: result.message || "Đăng nhập thành công!",
+          message: result.message || "Đăng nhập thành công!"
         });
         router.replace("/(tabs)/homepage");
       }
@@ -105,7 +86,7 @@ const LoginPage: React.FC = () => {
       console.error("Login error:", error);
       showAlert({
         title: "Lỗi",
-        message: "Đăng nhập thất bại. Vui lòng thử lại.",
+        message: "Đăng nhập thất bại. Vui lòng thử lại."
       });
     }
   };
@@ -133,7 +114,7 @@ const LoginPage: React.FC = () => {
             <Image
               source={require("@/assets/images/logo-text-primary.png")}
               style={styles.logo}
-              resizeMode='contain'
+              resizeMode="contain"
             />
           </View>
 
@@ -147,24 +128,23 @@ const LoginPage: React.FC = () => {
 
           {/* Login Form */}
           <View style={styles.formContainer}>
-            {/* Email Input */}
+            {/* Username Input */}
             <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Email</Text>
+              <Text style={styles.inputLabel}>Tên đăng nhập</Text>
               <View style={styles.inputWrapper}>
                 <Ionicons
-                  name='mail-outline'
+                  name="person-outline"
                   size={20}
                   color={theme.color.gray}
                   style={styles.inputIcon}
                 />
                 <TextInput
                   style={styles.textInput}
-                  placeholder='Nhập email của bạn'
+                  placeholder="Nhập tên đăng nhập"
                   placeholderTextColor={theme.color.gray}
-                  value={formData.email}
-                  onChangeText={(text) => handleInputChange("email", text)}
-                  keyboardType='email-address'
-                  autoCapitalize='none'
+                  value={formData.username}
+                  onChangeText={(text) => handleInputChange("username", text)}
+                  autoCapitalize="none"
                   autoCorrect={false}
                 />
               </View>
@@ -175,19 +155,19 @@ const LoginPage: React.FC = () => {
               <Text style={styles.inputLabel}>Mật khẩu</Text>
               <View style={styles.inputWrapper}>
                 <Ionicons
-                  name='lock-closed-outline'
+                  name="lock-closed-outline"
                   size={20}
                   color={theme.color.gray}
                   style={styles.inputIcon}
                 />
                 <TextInput
                   style={[styles.textInput, styles.passwordInput]}
-                  placeholder='Nhập mật khẩu'
+                  placeholder="Nhập mật khẩu"
                   placeholderTextColor={theme.color.gray}
                   value={formData.password}
                   onChangeText={(text) => handleInputChange("password", text)}
                   secureTextEntry={!showPassword}
-                  autoCapitalize='none'
+                  autoCapitalize="none"
                   autoCorrect={false}
                 />
                 <TouchableOpacity
@@ -215,7 +195,7 @@ const LoginPage: React.FC = () => {
             <TouchableOpacity
               style={[
                 styles.loginButton,
-                loginMutation.isPending && styles.loginButtonDisabled,
+                loginMutation.isPending && styles.loginButtonDisabled
               ]}
               onPress={handleLogin}
               disabled={loginMutation.isPending}
@@ -242,51 +222,51 @@ const LoginPage: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.color.white,
+    backgroundColor: theme.color.white
   },
   keyboardAvoidingView: {
-    flex: 1,
+    flex: 1
   },
   scrollViewContent: {
     flexGrow: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: 20
   },
   logoContainer: {
     alignItems: "center",
     marginTop: 60,
-    marginBottom: 40,
+    marginBottom: 40
   },
   logo: {
     width: 200,
-    height: 80,
+    height: 80
   },
   welcomeContainer: {
     alignItems: "center",
-    marginBottom: 40,
+    marginBottom: 40
   },
   welcomeTitle: {
     fontSize: 28,
     fontWeight: "bold",
     color: theme.color.dark,
-    marginBottom: 8,
+    marginBottom: 8
   },
   welcomeSubtitle: {
     fontSize: 16,
     color: theme.color.gray,
     textAlign: "center",
-    lineHeight: 24,
+    lineHeight: 24
   },
   formContainer: {
-    flex: 1,
+    flex: 1
   },
   inputContainer: {
-    marginBottom: 20,
+    marginBottom: 20
   },
   inputLabel: {
     fontSize: 16,
     fontWeight: "600",
     color: theme.color.dark,
-    marginBottom: 8,
+    marginBottom: 8
   },
   inputWrapper: {
     flexDirection: "row",
@@ -296,33 +276,33 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: theme.color.white,
     paddingHorizontal: 16,
-    height: 56,
+    height: 56
   },
   inputIcon: {
-    marginRight: 12,
+    marginRight: 12
   },
   textInput: {
     flex: 1,
     fontSize: 16,
     color: theme.color.dark,
-    paddingVertical: 0,
+    paddingVertical: 0
   },
   passwordInput: {
-    paddingRight: 40,
+    paddingRight: 40
   },
   eyeIcon: {
     position: "absolute",
     right: 16,
-    padding: 4,
+    padding: 4
   },
   forgotPasswordContainer: {
     alignItems: "flex-end",
-    marginBottom: 30,
+    marginBottom: 30
   },
   forgotPasswordText: {
     fontSize: 14,
     color: theme.color.primary,
-    fontWeight: "600",
+    fontWeight: "600"
   },
   loginButton: {
     backgroundColor: theme.color.primary,
@@ -330,31 +310,31 @@ const styles = StyleSheet.create({
     height: 56,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 24,
+    marginBottom: 24
   },
   loginButtonDisabled: {
-    opacity: 0.6,
+    opacity: 0.6
   },
   loginButtonText: {
     fontSize: 16,
     fontWeight: "600",
-    color: theme.color.white,
+    color: theme.color.white
   },
   signUpContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 40,
+    marginBottom: 40
   },
   signUpText: {
     fontSize: 14,
-    color: theme.color.gray,
+    color: theme.color.gray
   },
   signUpLink: {
     fontSize: 14,
     color: theme.color.primary,
-    fontWeight: "600",
-  },
+    fontWeight: "600"
+  }
 });
 
 export default LoginPage;

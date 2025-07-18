@@ -1,17 +1,13 @@
+import axiosInstance from "@/lib/api/axiosInstance";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  authApi,
-  AuthResponse,
-  LoginRequest,
-  RegisterRequest,
-} from "../../api/auth";
+import { authApi, AuthResponse, LoginRequest } from "../../api/auth";
 
 // Keys for AsyncStorage
 const STORAGE_KEYS = {
   ACCESS_TOKEN: "access_token",
   REFRESH_TOKEN: "refresh_token",
-  USER_DATA: "user_data",
+  USER_DATA: "user_data"
 };
 
 // Login mutation
@@ -20,42 +16,26 @@ export function useLoginMutation() {
 
   return useMutation({
     mutationFn: async (data: LoginRequest): Promise<AuthResponse> => {
-      // For now, simulate successful login
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Gọi API thật tới localhost:3000/auth/login
+      const response = await axiosInstance.post("auth/login", {
+        ...data,
+        deviceInfo: "android"
+      });
+      // axios trả về response.data
+      const result: AuthResponse = response.data;
 
-      const mockResponse: AuthResponse = {
-        success: true,
-        message: "Đăng nhập thành công",
-        data: {
-          user: {
-            id: "1",
-            fullName: "Người dùng mẫu",
-            email: data.email,
-            phone: "0123456789",
-            avatar: "",
-          },
-          token: "mock_access_token_" + Date.now(),
-          refreshToken: "mock_refresh_token_" + Date.now(),
-        },
-      };
-
-      // Store tokens and user data
-      if (mockResponse.data) {
+      // Store tokens và user data nếu có
+      if (result.data) {
         await AsyncStorage.setItem(
           STORAGE_KEYS.ACCESS_TOKEN,
-          mockResponse.data.token
+          result.data.access_token
         );
         await AsyncStorage.setItem(
           STORAGE_KEYS.REFRESH_TOKEN,
-          mockResponse.data.refreshToken
-        );
-        await AsyncStorage.setItem(
-          STORAGE_KEYS.USER_DATA,
-          JSON.stringify(mockResponse.data.user)
+          result.data.refresh_token
         );
       }
-
-      return mockResponse;
+      return result;
     },
     onSuccess: (data) => {
       // Invalidate and refetch user-related queries
@@ -64,43 +44,43 @@ export function useLoginMutation() {
     },
     onError: (error) => {
       console.error("Login failed:", error);
-    },
+    }
   });
 }
 
 // Register mutation
-export function useRegisterMutation() {
-  return useMutation({
-    mutationFn: async (data: RegisterRequest): Promise<AuthResponse> => {
-      // For now, simulate successful registration
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+// export function useRegisterMutation() {
+//   return useMutation({
+//     mutationFn: async (data: RegisterRequest): Promise<AuthResponse> => {
+//       // For now, simulate successful registration
+//       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      const mockResponse: AuthResponse = {
-        success: true,
-        message: "Đăng ký thành công",
-        data: {
-          user: {
-            id: "2",
-            fullName: data.fullName,
-            email: data.email,
-            phone: data.phone,
-            avatar: "",
-          },
-          token: "mock_access_token_" + Date.now(),
-          refreshToken: "mock_refresh_token_" + Date.now(),
-        },
-      };
+//       const mockResponse: AuthResponse = {
+//         success: true,
+//         message: "Đăng ký thành công",
+//         data: {
+//           user: {
+//             id: "2",
+//             fullName: data.fullName,
+//             email: data.email,
+//             phone: data.phone,
+//             avatar: ""
+//           },
+//           token: "mock_access_token_" + Date.now(),
+//           refreshToken: "mock_refresh_token_" + Date.now()
+//         }
+//       };
 
-      return mockResponse;
-    },
-    onSuccess: (data) => {
-      console.log("Registration successful:", data);
-    },
-    onError: (error) => {
-      console.error("Registration failed:", error);
-    },
-  });
-}
+//       return mockResponse;
+//     },
+//     onSuccess: (data) => {
+//       console.log("Registration successful:", data);
+//     },
+//     onError: (error) => {
+//       console.error("Registration failed:", error);
+//     }
+//   });
+// }
 
 // Logout mutation
 export function useLogoutMutation() {
@@ -112,7 +92,7 @@ export function useLogoutMutation() {
       await AsyncStorage.multiRemove([
         STORAGE_KEYS.ACCESS_TOKEN,
         STORAGE_KEYS.REFRESH_TOKEN,
-        STORAGE_KEYS.USER_DATA,
+        STORAGE_KEYS.USER_DATA
       ]);
 
       // Call API logout if needed
@@ -125,7 +105,7 @@ export function useLogoutMutation() {
     },
     onError: (error) => {
       console.error("Logout failed:", error);
-    },
+    }
   });
 }
 
@@ -174,10 +154,10 @@ export const tokenUtils = {
       await AsyncStorage.multiRemove([
         STORAGE_KEYS.ACCESS_TOKEN,
         STORAGE_KEYS.REFRESH_TOKEN,
-        STORAGE_KEYS.USER_DATA,
+        STORAGE_KEYS.USER_DATA
       ]);
     } catch (error) {
       console.error("Error clearing tokens:", error);
     }
-  },
+  }
 };

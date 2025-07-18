@@ -1,4 +1,5 @@
 import { theme } from "@/lib/theme";
+import { useRouter } from "expo-router";
 import React from "react";
 import {
   Dimensions,
@@ -6,7 +7,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 interface LoginScreenProps {
@@ -15,13 +16,14 @@ interface LoginScreenProps {
 }
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, onSignUp }) => {
+  const router = useRouter();
   return (
     <View style={styles.slide}>
       <View style={styles.logoContainer}>
         <Image
           source={require("@/assets/images/logo-text-primary.png")}
           style={styles.logo}
-          resizeMode='contain'
+          resizeMode="contain"
         />
       </View>
 
@@ -31,7 +33,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, onSignUp }) => {
       </Text>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.loginButton} onPress={onLogin}>
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={() => router.push("/login")}
+        >
           <Text style={styles.loginButtonText}>Login</Text>
         </TouchableOpacity>
 
@@ -49,16 +54,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 30,
-    width: Dimensions.get("window").width,
+    width: Dimensions.get("window").width
   },
   logoContainer: {
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 50,
+    marginBottom: 50
   },
   logo: {
     width: 100,
-    height: 100,
+    height: 100
   },
   title: {
     fontSize: 24,
@@ -66,30 +71,30 @@ const styles = StyleSheet.create({
     color: theme.color.dark,
     textAlign: "center",
     marginBottom: 24,
-    paddingHorizontal: 15,
+    paddingHorizontal: 15
   },
   description: {
     fontSize: 16,
     color: theme.color.darkGray,
     textAlign: "center",
     marginBottom: 40,
-    paddingHorizontal: 20,
+    paddingHorizontal: 20
   },
   buttonContainer: {
     width: "90%",
-    marginTop: 40,
+    marginTop: 40
   },
   loginButton: {
     backgroundColor: theme.color.primary,
     paddingVertical: 16,
     borderRadius: 10,
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 20
   },
   loginButtonText: {
     color: theme.color.light,
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "bold"
   },
   signUpButton: {
     backgroundColor: theme.color.light,
@@ -97,13 +102,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: theme.color.lightGray,
+    borderColor: theme.color.lightGray
   },
   signUpButtonText: {
     color: theme.color.dark,
     fontSize: 16,
-    fontWeight: "bold",
-  },
+    fontWeight: "bold"
+  }
 });
 
 export default LoginScreen;

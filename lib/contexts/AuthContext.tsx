@@ -3,7 +3,7 @@ import React, {
   ReactNode,
   useContext,
   useEffect,
-  useState,
+  useState
 } from "react";
 import { tokenUtils } from "../hooks/api/useAuth";
 
@@ -19,7 +19,7 @@ interface AuthContextType {
   user: User | null;
   isLoggedIn: boolean;
   isLoading: boolean;
-  login: (userData: User, token: string, refreshToken: string) => Promise<void>;
+  login: (token: string, refreshToken: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (userData: Partial<User>) => void;
 }
@@ -57,10 +57,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const login = async (userData: User, token: string, refreshToken: string) => {
+  const login = async (token: string, refreshToken: string) => {
     try {
       // Store tokens are already handled in useAuth mutation
-      setUser(userData);
       setIsLoggedIn(true);
     } catch (error) {
       console.error("Error during login:", error);
@@ -96,7 +95,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isLoading,
     login,
     logout,
-    updateUser,
+    updateUser
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
