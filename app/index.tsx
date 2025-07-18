@@ -27,15 +27,20 @@ export default function Index() {
       }}
     >
       <Button
-        title="Trang chủ"
+        title='Welcome Screen'
+        onPress={() => router.navigate("/welcome")}
+      />
+      <Button title='Đăng nhập' onPress={() => router.navigate("/login")} />
+      <Button
+        title='Trang chủ'
         onPress={() => router.navigate("/(tabs)/homepage")}
       />
       <Button
-        title="Bệnh viện"
+        title='Bệnh viện'
         onPress={() => router.navigate("/(hospital)/hospital-search")}
       />
-      <Button title="Show Splash Screen" onPress={() => setShowSplash(true)} />
-      <Button title="Show Onboarding" onPress={() => setShowOnboarding(true)} />
+      <Button title='Show Splash Screen' onPress={() => setShowSplash(true)} />
+      <Button title='Show Onboarding' onPress={() => setShowOnboarding(true)} />
     </View>
   );
 }
