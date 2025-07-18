@@ -1,9 +1,10 @@
-import { useBooking } from '@/lib/contexts/BookingContext'
-import { useCreateDonationReqMutation } from '@/lib/hooks/api/useDonationRequest'
-import { useNotifications } from '@/lib/hooks/useNotifications'
-import { theme } from '@/lib/theme'
-import { useRouter } from 'expo-router'
-import React, { useState } from 'react'
+import { useBooking } from "@/lib/contexts/BookingContext";
+import { useCreateDonationReqMutation } from "@/lib/hooks/api/useDonationRequest";
+import { useUserById } from "@/lib/hooks/api/useUser";
+import { useNotifications } from "@/lib/hooks/useNotifications";
+import { theme } from "@/lib/theme";
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   SafeAreaView,
@@ -12,124 +13,126 @@ import {
   Text,
   TouchableOpacity,
   View
-} from 'react-native'
+} from "react-native";
 
 const DonationBlood = () => {
-  const router = useRouter()
-  const { selectedPlace, setSelectedPlace } = useBooking()
-  const { scheduleAppointmentReminder } = useNotifications()
-  const currentDate = new Date()
+  const router = useRouter();
+  const { data: userData } = useUserById("6848f28cddd4f001f846e347");
+  console.log(userData);
+  const { selectedPlace, setSelectedPlace } = useBooking();
+  const { scheduleAppointmentReminder } = useNotifications();
+  const currentDate = new Date();
   const [selectedDate, setSelectedDate] = useState<number | null>(
     currentDate.getDate()
-  )
-  const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth())
-  const [currentYear, setCurrentYear] = useState(currentDate.getFullYear())
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const createDonationReqMutation = useCreateDonationReqMutation()
+  );
+  const [currentMonth, setCurrentMonth] = useState(currentDate.getMonth());
+  const [currentYear, setCurrentYear] = useState(currentDate.getFullYear());
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const createDonationReqMutation = useCreateDonationReqMutation();
 
   const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
-  ]
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
 
-  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   const getDaysInMonth = (month: number, year: number) => {
-    return new Date(year, month + 1, 0).getDate()
-  }
+    return new Date(year, month + 1, 0).getDate();
+  };
 
   const getFirstDayOfMonth = (month: number, year: number) => {
-    return new Date(year, month, 1).getDay()
-  }
-  const navigateMonth = (direction: 'prev' | 'next') => {
-    if (direction === 'prev') {
+    return new Date(year, month, 1).getDay();
+  };
+  const navigateMonth = (direction: "prev" | "next") => {
+    if (direction === "prev") {
       if (currentMonth === 0) {
-        setCurrentMonth(11)
-        setCurrentYear(currentYear - 1)
+        setCurrentMonth(11);
+        setCurrentYear(currentYear - 1);
       } else {
-        setCurrentMonth(currentMonth - 1)
+        setCurrentMonth(currentMonth - 1);
       }
     } else {
       if (currentMonth === 11) {
-        setCurrentMonth(0)
-        setCurrentYear(currentYear + 1)
+        setCurrentMonth(0);
+        setCurrentYear(currentYear + 1);
       } else {
-        setCurrentMonth(currentMonth + 1)
+        setCurrentMonth(currentMonth + 1);
       }
     }
 
     // Clear selected date if it becomes a past date after navigation
     if (selectedDate) {
       const newMonth =
-        direction === 'prev'
+        direction === "prev"
           ? currentMonth === 0
             ? 11
             : currentMonth - 1
           : currentMonth === 11
           ? 0
-          : currentMonth + 1
+          : currentMonth + 1;
       const newYear =
-        direction === 'prev'
+        direction === "prev"
           ? currentMonth === 0
             ? currentYear - 1
             : currentYear
           : currentMonth === 11
           ? currentYear + 1
-          : currentYear
+          : currentYear;
 
-      const selectedDateObj = new Date(newYear, newMonth, selectedDate)
+      const selectedDateObj = new Date(newYear, newMonth, selectedDate);
       const currentDateOnly = new Date(
         currentDate.getFullYear(),
         currentDate.getMonth(),
         currentDate.getDate()
-      )
+      );
 
       if (selectedDateObj < currentDateOnly) {
-        setSelectedDate(null)
+        setSelectedDate(null);
       }
     }
-  }
+  };
 
   const renderCalendar = () => {
-    const daysInMonth = getDaysInMonth(currentMonth, currentYear)
-    const firstDay = getFirstDayOfMonth(currentMonth, currentYear)
-    const today = new Date().getDate()
-    const currentDate = new Date()
+    const daysInMonth = getDaysInMonth(currentMonth, currentYear);
+    const firstDay = getFirstDayOfMonth(currentMonth, currentYear);
+    const today = new Date().getDate();
+    const currentDate = new Date();
     const isCurrentMonth =
       currentMonth === currentDate.getMonth() &&
-      currentYear === currentDate.getFullYear()
+      currentYear === currentDate.getFullYear();
 
-    const days = []
+    const days = [];
 
     for (let i = 0; i < firstDay; i++) {
       days.push(
         <View key={`empty-${i}`} style={styles.dayContainer}>
           <View style={styles.emptyDay} />
         </View>
-      )
+      );
     }
     for (let day = 1; day <= daysInMonth; day++) {
-      const isSelected = selectedDate === day
-      const isToday = isCurrentMonth && today === day
+      const isSelected = selectedDate === day;
+      const isToday = isCurrentMonth && today === day;
 
       // Check if the day is in the past
-      const dayDate = new Date(currentYear, currentMonth, day)
+      const dayDate = new Date(currentYear, currentMonth, day);
       const currentDateOnly = new Date(
         currentDate.getFullYear(),
         currentDate.getMonth(),
         currentDate.getDate()
-      )
-      const isPastDay = dayDate < currentDateOnly
+      );
+      const isPastDay = dayDate < currentDateOnly;
 
       days.push(
         <View key={day} style={styles.dayContainer}>
@@ -142,8 +145,8 @@ const DonationBlood = () => {
             ]}
             onPress={() => {
               if (!isPastDay) {
-                setSelectedDate(day)
-                router.push('/(donation-request)/donation-place')
+                setSelectedDate(day);
+                router.push("/(donation-request)/donation-place");
               }
             }}
             disabled={isPastDay}
@@ -160,35 +163,35 @@ const DonationBlood = () => {
             </Text>
           </TouchableOpacity>
         </View>
-      )
+      );
     }
 
-    return days
-  }
+    return days;
+  };
   const handleBookingSubmit = async () => {
-    if (createDonationReqMutation.isPending) return
+    if (createDonationReqMutation.isPending) return;
     if (!selectedDate || !selectedPlace) {
-      alert('Vui lòng chọn ngày và địa điểm')
-      return
+      alert("Vui lòng chọn ngày và địa điểm");
+      return;
     }
 
     // Validate selected date is not in the past
-    const selectedDateObj = new Date(currentYear, currentMonth, selectedDate)
+    const selectedDateObj = new Date(currentYear, currentMonth, selectedDate);
     const currentDateOnly = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
       currentDate.getDate()
-    )
+    );
 
     if (selectedDateObj < currentDateOnly) {
       alert(
-        'Không thể đặt lịch cho ngày trong quá khứ. Vui lòng chọn ngày khác.'
-      )
-      setSelectedDate(null) // Reset selected date
-      return
+        "Không thể đặt lịch cho ngày trong quá khứ. Vui lòng chọn ngày khác."
+      );
+      setSelectedDate(null); // Reset selected date
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
       const appointmentDate = new Date(
@@ -197,45 +200,46 @@ const DonationBlood = () => {
         selectedDate,
         10,
         0
-      ) // 10:00 AM default
+      ); // 10:00 AM default
 
       const appointmentData = {
         id: `appointment_${Date.now()}`,
         title: `Hiến máu tại ${selectedPlace.title}`,
         date: appointmentDate
-      }
+      };
 
       await scheduleAppointmentReminder(
         appointmentData.id,
         appointmentData.date,
         appointmentData.title
-      )
+      );
       // console.log('Đã lên lịch thông báo:', notificationIds)
 
       const response = await createDonationReqMutation.mutateAsync({
         hospitalId: selectedPlace.id,
         scheduleDate: appointmentDate.toISOString(),
-        userId: '6848f28cddd4f001f846e347'
-      })
-      console.log('response:', response)
+        userId: "6848f28cddd4f001f846e347",
+        createdBy: userData?.fullName || "unknown"
+      });
+      console.log("response:", response);
 
       // Reset form
-      setSelectedDate(null)
-      setCurrentMonth(currentDate.getMonth())
-      setCurrentYear(currentDate.getFullYear())
-      setSelectedPlace(null)
+      setSelectedDate(null);
+      setCurrentMonth(currentDate.getMonth());
+      setCurrentYear(currentDate.getFullYear());
+      setSelectedPlace(null);
 
       alert(
-        'Đặt lịch hiến máu thành công! Bạn sẽ nhận được thông báo nhắc nhở trước khi đến hẹn.'
-      )
-      router.push('/(donation-request)/donation-request')
+        "Đặt lịch hiến máu thành công! Bạn sẽ nhận được thông báo nhắc nhở trước khi đến hẹn."
+      );
+      router.push("/(donation-request)/donation-request");
     } catch (error) {
-      console.error('Lỗi khi đặt lịch:', error)
-      alert('Có lỗi xảy ra khi đặt lịch. Vui lòng thử lại.')
+      console.error("Lỗi khi đặt lịch:", error);
+      alert("Có lỗi xảy ra khi đặt lịch. Vui lòng thử lại.");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -248,7 +252,7 @@ const DonationBlood = () => {
         <View style={styles.calendarHeader}>
           <TouchableOpacity
             style={styles.navButton}
-            onPress={() => navigateMonth('prev')}
+            onPress={() => navigateMonth("prev")}
           >
             <Text style={styles.navButtonText}>Tháng trước</Text>
           </TouchableOpacity>
@@ -259,7 +263,7 @@ const DonationBlood = () => {
 
           <TouchableOpacity
             style={styles.navButton}
-            onPress={() => navigateMonth('next')}
+            onPress={() => navigateMonth("next")}
           >
             <Text style={styles.navButtonText}>Tháng sau</Text>
           </TouchableOpacity>
@@ -285,7 +289,7 @@ const DonationBlood = () => {
               styles.locationButton,
               selectedPlace && styles.selectedLocationButton
             ]}
-            onPress={() => router.push('/(donation-request)/donation-place')}
+            onPress={() => router.push("/(donation-request)/donation-place")}
           >
             {selectedPlace ? (
               <View>
@@ -318,12 +322,12 @@ const DonationBlood = () => {
         </View>
       )}
     </SafeAreaView>
-  )
-}
+  );
+};
 
 interface SubmitButtonProps {
-  onPress: () => void
-  isSubmitting: boolean
+  onPress: () => void;
+  isSubmitting: boolean;
 }
 
 const SubmitButton = ({ onPress, isSubmitting }: SubmitButtonProps) => (
@@ -334,20 +338,20 @@ const SubmitButton = ({ onPress, isSubmitting }: SubmitButtonProps) => (
   >
     {isSubmitting ? (
       <View style={styles.submitButtonContent}>
-        <ActivityIndicator size='small' color='white' />
+        <ActivityIndicator size="small" color="white" />
         <Text style={styles.submitButtonText}>Đang xử lý...</Text>
       </View>
     ) : (
       <Text style={styles.submitButtonText}>Đặt lịch</Text>
     )}
   </TouchableOpacity>
-)
+);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    minHeight: '100%',
-    backgroundColor: '#f5f5f5'
+    minHeight: "100%",
+    backgroundColor: "#f5f5f5"
   },
   scrollView: {
     flex: 1
@@ -356,14 +360,14 @@ const styles = StyleSheet.create({
     paddingBottom: 80 // Đảm bảo nội dung không bị che bởi nút đặt lịch
   },
   calendarHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: 'white',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "white",
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e5e5'
+    borderBottomColor: "#e5e5e5"
   },
   navButton: {
     paddingHorizontal: 12,
@@ -372,19 +376,19 @@ const styles = StyleSheet.create({
   navButtonText: {
     color: theme.color.primary,
     fontSize: 14,
-    fontWeight: '500'
+    fontWeight: "500"
   },
   monthYear: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333'
+    fontWeight: "bold",
+    color: "#333"
   },
   calendar: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     margin: 16,
     borderRadius: 12,
     padding: 16,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2
@@ -394,41 +398,41 @@ const styles = StyleSheet.create({
     elevation: 5
   },
   weekHeader: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 16
   },
   weekDayContainer: {
     flex: 1,
-    alignItems: 'center'
+    alignItems: "center"
   },
   weekDayText: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#666'
+    fontWeight: "600",
+    color: "#666"
   },
   daysGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap'
+    flexDirection: "row",
+    flexWrap: "wrap"
   },
   dayContainer: {
-    width: '14.28%', // 100% / 7 days
+    width: "14.28%", // 100% / 7 days
     aspectRatio: 1,
     padding: 2
   },
   dayButton: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 8
   },
   selectedDay: {
     backgroundColor: theme.color.primary
   },
   todayDay: {
-    backgroundColor: '#f0f0f0'
+    backgroundColor: "#f0f0f0"
   },
   pastDay: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
     opacity: 0.5
   },
   emptyDay: {
@@ -436,31 +440,31 @@ const styles = StyleSheet.create({
   },
   dayText: {
     fontSize: 16,
-    color: '#333',
-    fontWeight: '500'
+    color: "#333",
+    fontWeight: "500"
   },
   selectedDayText: {
-    color: 'white',
-    fontWeight: 'bold'
+    color: "white",
+    fontWeight: "bold"
   },
   todayDayText: {
     color: theme.color.primary,
-    fontWeight: 'bold'
+    fontWeight: "bold"
   },
   pastDayText: {
-    color: '#bbb',
-    fontWeight: '400'
+    color: "#bbb",
+    fontWeight: "400"
   },
   locationSection: {
     margin: 16,
     gap: 12
   },
   locationButton: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 8,
     paddingVertical: 16,
     paddingHorizontal: 20,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2
@@ -471,8 +475,8 @@ const styles = StyleSheet.create({
   },
   locationButtonText: {
     fontSize: 16,
-    color: '#666',
-    fontWeight: '500'
+    color: "#666",
+    fontWeight: "500"
   },
   selectedLocationButton: {
     borderWidth: 1,
@@ -480,20 +484,20 @@ const styles = StyleSheet.create({
   },
   selectedLocationTitle: {
     fontSize: 16,
-    color: '#333',
-    fontWeight: '500'
+    color: "#333",
+    fontWeight: "500"
   },
   selectedLocationAddress: {
     fontSize: 14,
-    color: '#666',
-    fontWeight: '400'
+    color: "#666",
+    fontWeight: "400"
   },
   addressButton: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 8,
     paddingVertical: 16,
     paddingHorizontal: 20,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2
@@ -504,19 +508,19 @@ const styles = StyleSheet.create({
   },
   addressButtonText: {
     fontSize: 16,
-    color: '#999',
-    fontWeight: '500'
+    color: "#999",
+    fontWeight: "500"
   },
   bookingButtonContainer: {
     margin: 16,
-    alignItems: 'center'
+    alignItems: "center"
   },
   bookingButton: {
     backgroundColor: theme.color.primary,
     borderRadius: 8,
     paddingVertical: 16,
     paddingHorizontal: 32,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2
@@ -527,54 +531,54 @@ const styles = StyleSheet.create({
   },
   bookingButtonText: {
     fontSize: 18,
-    color: 'white',
-    fontWeight: 'bold'
+    color: "white",
+    fontWeight: "bold"
   },
   selectedPlaceInfo: {
     marginTop: 8
   },
   selectedPlaceAddress: {
     fontSize: 14,
-    color: '#333',
-    fontWeight: '500'
+    color: "#333",
+    fontWeight: "500"
   },
   selectedPlaceTime: {
     fontSize: 12,
-    color: '#999',
-    fontWeight: '400'
+    color: "#999",
+    fontWeight: "400"
   },
   submitButton: {
     backgroundColor: theme.color.primary,
     borderRadius: 8,
     paddingVertical: 16,
-    alignItems: 'center',
+    alignItems: "center",
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2
   },
   submitButtonDisabled: {
-    backgroundColor: '#9ca3af'
+    backgroundColor: "#9ca3af"
   },
   submitButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center'
+    flexDirection: "row",
+    alignItems: "center"
   },
   submitButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginLeft: 8
   },
   bottomButtonContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
     paddingHorizontal: 16,
     paddingBottom: 16
   }
-})
+});
 
-export default DonationBlood
+export default DonationBlood;

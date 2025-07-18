@@ -31,41 +31,34 @@ export default function HomePage() {
   }
 
   const bloodTypes = [
-    { type: "A+", compatibility: "Can donate to A+, AB+" },
-    { type: "O-", compatibility: "Universal donor" },
-    { type: "AB+", compatibility: "Universal recipient" },
-    { type: "B-", compatibility: "Can donate to B-, B+, AB-, AB+" }
+    { type: "A+", compatibility: "Có thể hiến cho A+, AB+" },
+    { type: "O-", compatibility: "Nhóm máu cho mọi người" },
+    { type: "AB+", compatibility: "Nhận máu từ mọi nhóm" },
+    { type: "B-", compatibility: "Có thể hiến cho B-, B+, AB-, AB+" }
   ];
 
   const quickActions = [
     {
       id: "1",
-      title: "Donate Blood",
-      subtitle: "Register to donate",
+      title: "Đăng ký hiến máu",
+      subtitle: "Tham gia hiến máu",
       icon: "heart",
       color: "#FF6B6B",
       onPress: () => router.navigate("/(donation-request)/donation-request")
     },
-    {
-      id: "2",
-      title: "Find Donor",
-      subtitle: "Search nearby donors",
-      icon: "search",
-      color: "#4ECDC4",
-      onPress: () => router.navigate("/(donation-request)/donation-place")
-    },
+
     {
       id: "3",
-      title: "Blood Bank",
-      subtitle: "Check availability",
+      title: "Ngân hàng máu",
+      subtitle: "Kiểm tra số lượng",
       icon: "medical",
       color: "#45B7D1",
       onPress: () => router.navigate("/(donation-request)/donation-blood")
     },
     {
       id: "4",
-      title: "Emergency",
-      subtitle: "Urgent blood needed",
+      title: "Khẩn cấp",
+      subtitle: "Cần máu gấp",
       icon: "alert-circle",
       color: "#FF9F43",
       onPress: () => router.navigate("/(donation-request)/donation-request")
@@ -73,26 +66,26 @@ export default function HomePage() {
   ];
 
   const stats = [
-    { label: "Total Donors", value: "1,247", icon: "people" },
-    { label: "Units Collected", value: "3,892", icon: "water" },
-    { label: "Lives Saved", value: "11,676", icon: "heart" },
-    { label: "Active Requests", value: "23", icon: "time" }
+    { label: "Tổng số người hiến", value: "1,247", icon: "people" },
+    { label: "Đơn vị máu đã nhận", value: "3,892", icon: "water" },
+    { label: "Số người được cứu", value: "11,676", icon: "heart" },
+    { label: "Yêu cầu đang hoạt động", value: "23", icon: "time" }
   ];
 
   const emergencyRequests = [
     {
       id: "1",
       bloodType: "O-",
-      location: "City Hospital",
-      urgency: "Critical",
-      timePosted: "2 hours ago"
+      location: "Bệnh viện Thành phố",
+      urgency: "Khẩn cấp",
+      timePosted: "2 giờ trước"
     },
     {
       id: "2",
       bloodType: "A+",
-      location: "General Hospital",
-      urgency: "Urgent",
-      timePosted: "4 hours ago"
+      location: "Bệnh viện Đa khoa",
+      urgency: "Gấp",
+      timePosted: "4 giờ trước"
     }
   ];
 
@@ -153,17 +146,17 @@ export default function HomePage() {
               style={styles.logo}
               resizeMode="contain"
             />
-            <Text style={styles.headerTitle}>Blood Donation Center</Text>
-            <Text style={styles.headerSubtitle}>Saving lives together</Text>
+            <Text style={styles.headerTitle}>Trung tâm Hiến máu</Text>
+            <Text style={styles.headerSubtitle}>Chung tay cứu người</Text>
           </View>
         </View>
 
         {/* Emergency Alerts */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Emergency Requests</Text>
+            <Text style={styles.sectionTitle}>Yêu cầu khẩn cấp</Text>
             <TouchableOpacity>
-              <Text style={styles.seeAllText}>See all</Text>
+              <Text style={styles.seeAllText}>Xem tất cả</Text>
             </TouchableOpacity>
           </View>
           <FlatList
@@ -178,7 +171,7 @@ export default function HomePage() {
 
         {/* Quick Actions */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
+          <Text style={styles.sectionTitle}>Tác vụ nhanh</Text>
           <FlatList
             data={quickActions}
             renderItem={renderQuickAction}
@@ -191,7 +184,7 @@ export default function HomePage() {
 
         {/* Statistics */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Our Impact</Text>
+          <Text style={styles.sectionTitle}>Thống kê</Text>
           <View style={styles.statsContainer}>
             {stats.map((stat, index) => (
               <View key={index} style={styles.statCard}>
@@ -210,9 +203,9 @@ export default function HomePage() {
         {/* Blood Type Information */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Blood Type Info</Text>
+            <Text style={styles.sectionTitle}>Thông tin nhóm máu</Text>
             <TouchableOpacity>
-              <Text style={styles.seeAllText}>Learn more</Text>
+              <Text style={styles.seeAllText}>Tìm hiểu thêm</Text>
             </TouchableOpacity>
           </View>
           <FlatList
@@ -228,9 +221,9 @@ export default function HomePage() {
         {/* Latest Blogs */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Latest Blogs</Text>
+            <Text style={styles.sectionTitle}>Bài viết mới nhất</Text>
             <TouchableOpacity onPress={() => router.navigate("/blog")}>
-              <Text style={styles.seeAllText}>See all</Text>
+              <Text style={styles.seeAllText}>Xem tất cả</Text>
             </TouchableOpacity>
           </View>
           <FlatList
