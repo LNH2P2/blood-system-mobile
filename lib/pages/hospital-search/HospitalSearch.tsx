@@ -10,7 +10,6 @@ import {
   View,
 } from "react-native";
 import RNPickerSelect from "react-native-picker-select";
-
 import {
   useDistricts,
   useProvinces,
@@ -83,7 +82,7 @@ export default function HospitalSearchScreen() {
   if (provincesError) {
     return (
       <View style={styles.errorContainer}>
-        <Ionicons name="alert-circle" size={64} color="#DC2626" />
+        <Ionicons name='alert-circle' size={64} color='#DC2626' />
         <Text style={styles.errorText}>
           Không thể tải danh sách tỉnh thành. Vui lòng thử lại.
         </Text>
@@ -101,7 +100,7 @@ export default function HospitalSearchScreen() {
     <ScrollView style={styles.container}>
       <View style={styles.content}>
         <View style={styles.header}>
-          <Ionicons name="location" size={24} color="#DC2626" />
+          <Ionicons name='location' size={24} color='#DC2626' />
           <Text style={styles.headerText}>Chọn địa điểm tìm kiếm</Text>
         </View>
 
@@ -130,7 +129,7 @@ export default function HospitalSearchScreen() {
             <View style={styles.pickerContainer}>
               {loadingDistricts ? (
                 <View style={styles.loadingPicker}>
-                  <ActivityIndicator size="small" color="#DC2626" />
+                  <ActivityIndicator size='small' color='#DC2626' />
                   <Text style={styles.loadingPickerText}>Đang tải...</Text>
                 </View>
               ) : (
@@ -158,7 +157,7 @@ export default function HospitalSearchScreen() {
             <View style={styles.pickerContainer}>
               {loadingWards ? (
                 <View style={styles.loadingPicker}>
-                  <ActivityIndicator size="small" color="#DC2626" />
+                  <ActivityIndicator size='small' color='#DC2626' />
                   <Text style={styles.loadingPickerText}>Đang tải...</Text>
                 </View>
               ) : (
@@ -191,12 +190,12 @@ export default function HospitalSearchScreen() {
           onPress={handleSearch}
           disabled={!canSearch}
         >
-          <Ionicons name="search" size={20} color="white" />
+          <Ionicons name='search' size={20} color='white' />
           <Text style={styles.searchButtonText}>Tìm Bệnh Viện</Text>
         </TouchableOpacity>
 
         <View style={styles.note}>
-          <Ionicons name="information-circle" size={16} color="#666" />
+          <Ionicons name='information-circle' size={16} color='#666' />
           <Text style={styles.noteText}>
             Vui lòng chọn ít nhất tỉnh/thành phố và quận/huyện để tìm kiếm bệnh
             viện.
