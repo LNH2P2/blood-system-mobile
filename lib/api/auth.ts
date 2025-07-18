@@ -1,7 +1,7 @@
 import { fetchWithTimeout } from "../utils/fetchWithTimeout";
 
 export interface LoginRequest {
-  email: string;
+  username: string;
   password: string;
 }
 
@@ -13,18 +13,11 @@ export interface RegisterRequest {
 }
 
 export interface AuthResponse {
-  success: boolean;
+  statusCode: number;
   message: string;
-  data?: {
-    user: {
-      id: string;
-      fullName: string;
-      email: string;
-      phone: string;
-      avatar?: string;
-    };
-    token: string;
-    refreshToken: string;
+  data: {
+    access_token: string;
+    refresh_token: string;
   };
 }
 
@@ -36,9 +29,9 @@ class AuthApi {
       const response = await fetchWithTimeout(`${this.baseUrl}/auth/login`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(data)
       });
 
       if (!response.ok) {
@@ -57,9 +50,9 @@ class AuthApi {
       const response = await fetchWithTimeout(`${this.baseUrl}/auth/register`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(data)
       });
 
       if (!response.ok) {
@@ -88,9 +81,9 @@ class AuthApi {
       const response = await fetchWithTimeout(`${this.baseUrl}/auth/refresh`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({ refreshToken }),
+        body: JSON.stringify({ refreshToken })
       });
 
       if (!response.ok) {
@@ -113,9 +106,9 @@ class AuthApi {
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
-          body: JSON.stringify({ email }),
+          body: JSON.stringify({ email })
         }
       );
 
