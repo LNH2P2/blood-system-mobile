@@ -1,14 +1,15 @@
 import axios from "axios";
-import Constants from 'expo-constants';
+import Constants from "expo-constants";
 
-const { API_BASE_URL } = Constants?.expoConfig?.extra;
+// Safely access API_BASE_URL with fallback
+const API_BASE_URL = Constants?.expoConfig?.extra?.API_BASE_URL as string | undefined;
 class AxiosInstance {
   api;
 
   constructor() {
-    console.log("Initializing AxiosInstance...",API_BASE_URL);
+    console.log("Initializing AxiosInstance...", API_BASE_URL);
     this.api = axios.create({
-      baseURL: API_BASE_URL, // Thay thế bằng URL API của bạn
+      baseURL: API_BASE_URL || "http://localhost:3000", // Use environment variable or fallback
       timeout: 10000,
     });
 
